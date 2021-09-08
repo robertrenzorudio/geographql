@@ -6,8 +6,8 @@
   "scripts": {
     "prewatch": "rimraf dist",
     "watch": "tsc -w",
-    "dev": "nodemon dist/index.js",
-    "dev2": "ts-node src/index.ts",
+    "dev": "concurrently \"nodemon dist/index.js\" \"yarn codegen:generate --watch\"",
+    "dev2": "concurrently \"ts-node src/index.ts\" \"yarn codedgen:generate --watch\"",
     "prebuild": "rimraf dist",
     "build": "tsc",
     "start": "node dist/index.js",
@@ -26,6 +26,7 @@
     "@types/lodash": "^4.14.172",
     "@types/node": "^16.7.11",
     "commitizen": "^4.2.4",
+    "concurrently": "^6.2.1",
     "cz-conventional-changelog": "3.3.0",
     "nodemon": "^2.0.12",
     "prisma": "2.30.3",
@@ -42,6 +43,7 @@
     "express": "^4.17.1",
     "graphql": "^15.5.3",
     "graphql-tag": "^2.12.5",
+    "graphql-type-json": "^0.3.2",
     "lodash": "^4.17.21"
   },
   "config": {

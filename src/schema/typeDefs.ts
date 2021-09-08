@@ -1,5 +1,7 @@
-import person from './person/typeDefs';
+import country from './country/typeDefs';
+import json from './json/typeDefs';
+import timezone from './timezone/typeDefs';
 
-const typeDefs = [person];
+const typeDefs = [country, json, timezone];
 
 export default typeDefs;
