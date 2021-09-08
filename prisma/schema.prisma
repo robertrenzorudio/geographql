@@ -9,3 +9,40 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
+
+model Country {
+  id              Int        @id @default(autoincrement())
+  name            String     @db.VarChar(255)
+  iso2            String     @unique @db.Char(2)
+  iso3            String     @unique @db.Char(3)
+  numeric_code    String     @unique @db.Char(3)
+  phone_code      String     @db.VarChar(255)
+  capital         String     @db.VarChar(255)
+  currency        String     @db.VarChar(255)
+  currency_symbol String     @db.VarChar(255)
+  tld             String     @db.Char(3)
+  native          String     @db.VarChar(255)
+  region          String     @db.VarChar(255)
+  subregion       String     @db.VarChar(255)
+  timezones       Timezone[]
+  translations    Json       @db.Json
+  latitude        Decimal    @db.Decimal(10, 8)
+  longitude       Decimal    @db.Decimal(11, 8)
+  emoji           String     @db.VarChar(255)
+  emojiU          String     @db.VarChar(255)
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @default(now())
+}
+
+model Timezone {
+  id              Int      @id @default(autoincrement())
+  zone_name       String   @db.VarChar(255)
+  gmt_offset      Int
+  gmt_offset_name String   @db.VarChar(255)
+  abbreviation    String   @db.VarChar(255)
+  timezone_name   String   @db.VarChar(255)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+  Country         Country  @relation(fields: [country_id], references: [id])
+  country_id      Int
+}
