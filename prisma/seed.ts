@@ -50,7 +50,7 @@ const seedCountry = async () => {
         native,
         region,
         subregion,
-        translations,
+        translations: translations!,
         latitude,
         longitude,
         emoji,
