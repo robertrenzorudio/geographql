@@ -1,10 +1,9 @@
-import { PrismaClient, Country, Timezone } from '@prisma/client';
+import { PrismaClient, Country, Timezone, State } from '@prisma/client';
 import fs from 'fs';
 import util from 'util';
 import path from 'path';
 
 const readFile = util.promisify(fs.readFile);
-
 const prisma = new PrismaClient();
 
 const seedCountry = async () => {
@@ -15,7 +14,7 @@ const seedCountry = async () => {
 
   const countries = JSON.parse(countriesRaw) as Country[];
 
-  for (let i = 0; i < countries.length; i++) {
+  for (const country of countries) {
     const {
       name,
       iso2,
@@ -34,7 +33,7 @@ const seedCountry = async () => {
       longitude,
       emoji,
       emojiU,
-    } = countries[i];
+    } = country;
 
     await prisma.country.create({
       data: {
@@ -68,7 +67,7 @@ const seedTimezone = async () => {
 
   const timezones = JSON.parse(timezonesRaw) as Timezone[];
 
-  for (let i = 0; i < timezones.length; i++) {
+  for (const timezone of timezones) {
     const {
       zone_name,
       gmt_offset,
@@ -76,7 +75,7 @@ const seedTimezone = async () => {
       abbreviation,
       timezone_name,
       country_id,
-    } = timezones[i];
+    } = timezone;
 
     await prisma.timezone.create({
       data: {
@@ -91,9 +90,35 @@ const seedTimezone = async () => {
   }
 };
 
+const seedState = async () => {
+  const stateRaw = await readFile(
+    path.join(__dirname, '../data/states.json'),
+    'utf-8'
+  );
+
+  const states = JSON.parse(stateRaw) as State[];
+
+  for (const state of states) {
+    const { name, state_code, country_code, latitude, longitude, country_id } =
+      state;
+
+    await prisma.state.create({
+      data: {
+        name,
+        state_code,
+        country_code,
+        latitude,
+        longitude,
+        country_id,
+      },
+    });
+  }
+};
+
 (async () => {
   await seedCountry();
   await seedTimezone();
+  await seedState();
 })()
   .catch((err) => console.log(err))
   .finally(() => prisma.$disconnect());
