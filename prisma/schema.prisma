@@ -30,6 +30,7 @@ model Country {
   longitude       Decimal    @db.Decimal(11, 8)
   emoji           String     @db.VarChar(255)
   emojiU          String     @db.VarChar(255)
+  states          State[]
   created_at      DateTime   @default(now())
   updated_at      DateTime   @default(now())
 
@@ -47,4 +48,17 @@ model Timezone {
   updated_at      DateTime @default(now())
   Country         Country  @relation(fields: [country_id], references: [id])
   country_id      Int
+}
+
+model State {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(255)
+  state_code   String   @db.VarChar(255)
+  country_code String   @db.VarChar(2)
+  latitude     Decimal? @db.Decimal(10, 8)
+  longitude    Decimal? @db.Decimal(11, 8)
+  Country      Country? @relation(fields: [country_id], references: [id])
+  country_id   Int
+
+  @@unique([state_code, country_code])
 }
