@@ -32,6 +32,8 @@ model Country {
   emojiU          String     @db.VarChar(255)
   created_at      DateTime   @default(now())
   updated_at      DateTime   @default(now())
+
+  @@unique([latitude, longitude])
 }
 
 model Timezone {
