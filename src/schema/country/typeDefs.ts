@@ -2,11 +2,20 @@ import { gql } from 'graphql-tag';
 
 const typeDefs = gql`
   type Query {
-    country(iso2: ID, iso3: ID, numeric_code: ID): Country
-    countries(count: Int!): [Country!]!
+    "Get a specific country by id, iso2, iso3, or numeric_code."
+    country(id: Int, iso2: ID, iso3: ID, numeric_code: ID): Country
+
+    """
+    Get a list of states by page number and size.
+    Page is zero indexed.
+    """
+    countries(page: Int!, size: Int!): [Country!]!
   }
 
   type Country {
+    "The id of the country."
+    id: Int!
+
     "The name of the country."
     name: String!
 
@@ -32,7 +41,7 @@ const typeDefs = gql`
     phone_code: String!
 
     "The states/provinces/regions in the country."
-    states: [State!]!
+    states(page: Int!, size: Int!): [State!]!
 
     "The capital city of the country."
     capital: String!
