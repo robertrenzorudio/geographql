@@ -15,8 +15,8 @@ const resolvers: Resolvers = {
       }
     },
 
-    countries: async (_, { count }, ctx) => {
-      return ctx.db.country.findMany({ take: count });
+    countries: async (_, { page, size }, ctx) => {
+      return ctx.db.country.findMany({ take: size, skip: page * size });
     },
   },
 
@@ -27,10 +27,10 @@ const resolvers: Resolvers = {
         .timezones();
     },
 
-    states: async (parent, _, ctx) => {
+    states: async (parent, { page, size }, ctx) => {
       return await ctx.db.country
         .findUnique({ where: { id: parent.id } })
-        .states();
+        .states({ take: size, skip: page * size });
     },
   },
 };
