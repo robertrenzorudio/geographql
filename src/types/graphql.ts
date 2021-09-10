@@ -1,5 +1,5 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { Country as CountryModel } from '@prisma/client';
+import { Country as CountryModel, State as StateModel } from '@prisma/client';
 import { MyContext } from './context';
 export type Maybe<T> = T extends PromiseLike<infer U> ? Promise<U | null> : T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -38,6 +38,8 @@ export type Country = {
   numeric_code: Scalars['ID'];
   /** The dialing code of the country. */
   phone_code: Scalars['String'];
+  /** The states/provinces/regions in the country. */
+  states: Array<State>;
   /** The capital city of the country. */
   capital: Scalars['String'];
   /** The currency of the country. */
@@ -68,8 +70,20 @@ export type Country = {
 
 export type Query = {
   __typename?: 'Query';
-  country?: Maybe<Country>;
   countries: Array<Country>;
+  country?: Maybe<Country>;
+  /** Get a specific state by id or by state_code, country_code pair. */
+  state?: Maybe<State>;
+  /**
+   * Get a list of states by page number and size.
+   * Page is zero indexed.
+   */
+  states: Array<State>;
+};
+
+
+export type QueryCountriesArgs = {
+  count: Scalars['Int'];
 };
 
 
@@ -80,8 +94,47 @@ export type QueryCountryArgs = {
 };
 
 
-export type QueryCountriesArgs = {
-  count: Scalars['Int'];
+export type QueryStateArgs = {
+  id?: Maybe<Scalars['Int']>;
+  locationCode?: Maybe<StateCountryCodeInput>;
+};
+
+
+export type QueryStatesArgs = {
+  page: Scalars['Int'];
+  size: Scalars['Int'];
+};
+
+export type State = {
+  __typename?: 'State';
+  /** The id of the state. */
+  id: Scalars['Int'];
+  /** The name of the state. */
+  name: Scalars['String'];
+  /**
+   * The code designated to the state.
+   * Code is unique within the country.
+   */
+  state_code: Scalars['String'];
+  /**
+   * The ISO Alpha-2 code designated to the
+   * country where the state is located.
+   */
+  country_code: Scalars['String'];
+  /**
+   * The id of the country where the
+   * the state is located.
+   */
+  country_id: Scalars['Int'];
+  /** The latitude of the state. */
+  latitude?: Maybe<Scalars['Float']>;
+  /** The longitude of the state. */
+  longitude?: Maybe<Scalars['Float']>;
+};
+
+export type StateCountryCodeInput = {
+  state_code: Scalars['String'];
+  country_code: Scalars['String'];
 };
 
 export type Timezone = {
@@ -171,6 +224,8 @@ export type ResolversTypes = {
   JSONObject: ResolverTypeWrapper<Scalars['JSONObject']>;
   Query: ResolverTypeWrapper<{}>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  State: ResolverTypeWrapper<StateModel>;
+  StateCountryCodeInput: StateCountryCodeInput;
   Timezone: ResolverTypeWrapper<Timezone>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 };
@@ -185,6 +240,8 @@ export type ResolversParentTypes = {
   JSONObject: Scalars['JSONObject'];
   Query: {};
   Int: Scalars['Int'];
+  State: StateModel;
+  StateCountryCodeInput: StateCountryCodeInput;
   Timezone: Timezone;
   Boolean: Scalars['Boolean'];
 };
@@ -195,6 +252,7 @@ export type CountryResolvers<ContextType = MyContext, ParentType extends Resolve
   iso3?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   numeric_code?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   phone_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  states?: Resolver<Array<ResolversTypes['State']>, ParentType, ContextType>;
   capital?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   currency?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   currency_symbol?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -220,8 +278,21 @@ export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<Resolver
 }
 
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  country?: Resolver<Maybe<ResolversTypes['Country']>, ParentType, ContextType, RequireFields<QueryCountryArgs, never>>;
   countries?: Resolver<Array<ResolversTypes['Country']>, ParentType, ContextType, RequireFields<QueryCountriesArgs, 'count'>>;
+  country?: Resolver<Maybe<ResolversTypes['Country']>, ParentType, ContextType, RequireFields<QueryCountryArgs, never>>;
+  state?: Resolver<Maybe<ResolversTypes['State']>, ParentType, ContextType, RequireFields<QueryStateArgs, never>>;
+  states?: Resolver<Array<ResolversTypes['State']>, ParentType, ContextType, RequireFields<QueryStatesArgs, 'page' | 'size'>>;
+};
+
+export type StateResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['State'] = ResolversParentTypes['State']> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  state_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  country_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  country_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  latitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  longitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TimezoneResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Timezone'] = ResolversParentTypes['Timezone']> = {
@@ -239,6 +310,7 @@ export type Resolvers<ContextType = MyContext> = {
   JSON?: GraphQLScalarType;
   JSONObject?: GraphQLScalarType;
   Query?: QueryResolvers<ContextType>;
+  State?: StateResolvers<ContextType>;
   Timezone?: TimezoneResolvers<ContextType>;
 };
 

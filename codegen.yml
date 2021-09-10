@@ -9,6 +9,7 @@ generates:
       mapperTypeSuffix: Model
       mappers:
         Country: '@prisma/client#Country'
+        State: '@prisma/client#State'
     plugins:
       - "typescript"
       - "typescript-resolvers"

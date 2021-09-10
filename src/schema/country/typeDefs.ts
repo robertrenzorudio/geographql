@@ -31,6 +31,9 @@ const typeDefs = gql`
     "The dialing code of the country."
     phone_code: String!
 
+    "The states/provinces/regions in the country."
+    states: [State!]!
+
     "The capital city of the country."
     capital: String!
 
