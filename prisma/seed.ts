@@ -1,4 +1,4 @@
-import { PrismaClient, Country, Timezone, State } from '@prisma/client';
+import { PrismaClient, Country, Timezone, State, City } from '@prisma/client';
 import fs from 'fs';
 import util from 'util';
 import path from 'path';
@@ -115,10 +115,44 @@ const seedState = async () => {
   }
 };
 
+const seedCity = async () => {
+  const citiesRaw = await readFile(
+    path.join(__dirname, '../data/cities.json'),
+    'utf-8'
+  );
+
+  const cities = JSON.parse(citiesRaw) as City[];
+
+  for (const city of cities) {
+    const {
+      name,
+      state_id,
+      state_code,
+      country_id,
+      country_code,
+      latitude,
+      longitude,
+    } = city;
+
+    await prisma.city.create({
+      data: {
+        name,
+        state_id,
+        state_code,
+        country_id,
+        country_code,
+        latitude,
+        longitude,
+      },
+    });
+  }
+};
+
 (async () => {
   await seedCountry();
   await seedTimezone();
   await seedState();
+  await seedCity();
 })()
   .catch((err) => console.log(err))
   .finally(() => prisma.$disconnect());

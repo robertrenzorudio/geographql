@@ -17,6 +17,8 @@ model Country {
   iso3            String     @unique @db.Char(3)
   numeric_code    String     @unique @db.Char(3)
   phone_code      String     @db.VarChar(255)
+  states          State[]
+  cities          City[]
   capital         String     @db.VarChar(255)
   currency        String     @db.VarChar(255)
   currency_symbol String     @db.VarChar(255)
@@ -30,7 +32,6 @@ model Country {
   longitude       Decimal    @db.Decimal(11, 8)
   emoji           String     @db.VarChar(255)
   emojiU          String     @db.VarChar(255)
-  states          State[]
   created_at      DateTime   @default(now())
   updated_at      DateTime   @default(now())
 
@@ -44,10 +45,10 @@ model Timezone {
   gmt_offset_name String   @db.VarChar(255)
   abbreviation    String   @db.VarChar(255)
   timezone_name   String   @db.VarChar(255)
-  created_at      DateTime @default(now())
-  updated_at      DateTime @default(now())
   Country         Country  @relation(fields: [country_id], references: [id])
   country_id      Int
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
 }
 
 model State {
@@ -55,10 +56,28 @@ model State {
   name         String   @db.VarChar(255)
   state_code   String   @db.VarChar(255)
   country_code String   @db.VarChar(2)
+  country      Country  @relation(fields: [country_id], references: [id])
+  country_id   Int
+  cities       City[]
   latitude     Decimal? @db.Decimal(10, 8)
   longitude    Decimal? @db.Decimal(11, 8)
-  Country      Country? @relation(fields: [country_id], references: [id])
-  country_id   Int
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
 
   @@unique([state_code, country_code])
+}
+
+model City {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(255)
+  state        State    @relation(fields: [state_id], references: [id])
+  state_id     Int
+  state_code   String   @db.VarChar(255)
+  country      Country  @relation(fields: [country_id], references: [id])
+  country_id   Int
+  country_code String   @db.VarChar(2)
+  latitude     Decimal  @db.Decimal(10, 8)
+  longitude    Decimal  @db.Decimal(11, 8)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
 }
