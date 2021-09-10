@@ -11,7 +11,7 @@ generator client {
 }
 
 model Country {
-  id              Int        @id @default(autoincrement())
+  id              Int        @id
   name            String     @db.VarChar(255)
   iso2            String     @unique @db.Char(2)
   iso3            String     @unique @db.Char(3)
@@ -39,7 +39,7 @@ model Country {
 }
 
 model Timezone {
-  id              Int      @id @default(autoincrement())
+  id              Int      @id
   zone_name       String   @db.VarChar(255)
   gmt_offset      Int
   gmt_offset_name String   @db.VarChar(255)
@@ -52,7 +52,7 @@ model Timezone {
 }
 
 model State {
-  id           Int      @id @default(autoincrement())
+  id           Int      @id
   name         String   @db.VarChar(255)
   state_code   String   @db.VarChar(255)
   country_code String   @db.VarChar(2)
@@ -68,7 +68,7 @@ model State {
 }
 
 model City {
-  id           Int      @id @default(autoincrement())
+  id           Int      @id
   name         String   @db.VarChar(255)
   state        State    @relation(fields: [state_id], references: [id])
   state_id     Int
