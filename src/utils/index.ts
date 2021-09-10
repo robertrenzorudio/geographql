@@ -1,3 +1,1 @@
-import where from './where';
-
-export { where };
+export { default as prismaWhere } from './prismaWhere';
