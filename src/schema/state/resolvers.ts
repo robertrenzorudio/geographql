@@ -17,8 +17,8 @@ const resolvers: Resolvers = {
       }
     },
 
-    states: async (_, { page, size }, ctx) => {
-      return ctx.db.state.findMany({ take: size, skip: page * size });
+    states: async (_, { page = 0, size = 100 }, ctx) => {
+      return ctx.db.state.findMany({ take: size!, skip: page! * size! });
     },
   },
 };

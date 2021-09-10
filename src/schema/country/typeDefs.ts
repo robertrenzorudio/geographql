@@ -7,9 +7,9 @@ const typeDefs = gql`
 
     """
     Get a list of states by page number and size.
-    Page is zero indexed.
+    Default: page = 0, size = 100.
     """
-    countries(page: Int!, size: Int!): [Country!]!
+    countries(page: Int, size: Int): [Country!]!
   }
 
   type Country {
@@ -40,8 +40,11 @@ const typeDefs = gql`
     "The dialing code of the country."
     phone_code: String!
 
-    "The states/provinces/regions in the country."
-    states(page: Int!, size: Int!): [State!]!
+    """
+    Get a list of states/provinces/regions within the country by
+    page number and size. Default: page = 0, size = 100.
+    """
+    states(page: Int, size: Int): [State!]!
 
     "The capital city of the country."
     capital: String!

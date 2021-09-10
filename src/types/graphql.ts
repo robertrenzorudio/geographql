@@ -40,7 +40,10 @@ export type Country = {
   numeric_code: Scalars['ID'];
   /** The dialing code of the country. */
   phone_code: Scalars['String'];
-  /** The states/provinces/regions in the country. */
+  /**
+   * Get a list of states/provinces/regions within the country by
+   * page number and size. Default: page = 0, size = 100.
+   */
   states: Array<State>;
   /** The capital city of the country. */
   capital: Scalars['String'];
@@ -72,15 +75,15 @@ export type Country = {
 
 
 export type CountryStatesArgs = {
-  page: Scalars['Int'];
-  size: Scalars['Int'];
+  page?: Maybe<Scalars['Int']>;
+  size?: Maybe<Scalars['Int']>;
 };
 
 export type Query = {
   __typename?: 'Query';
   /**
    * Get a list of states by page number and size.
-   * Page is zero indexed.
+   * Default: page = 0, size = 100.
    */
   countries: Array<Country>;
   /** Get a specific country by id, iso2, iso3, or numeric_code. */
@@ -89,15 +92,15 @@ export type Query = {
   state?: Maybe<State>;
   /**
    * Get a list of states by page number and size.
-   * Page is zero indexed.
+   * Default: page = 0, size = 100.
    */
   states: Array<State>;
 };
 
 
 export type QueryCountriesArgs = {
-  page: Scalars['Int'];
-  size: Scalars['Int'];
+  page?: Maybe<Scalars['Int']>;
+  size?: Maybe<Scalars['Int']>;
 };
 
 
@@ -116,8 +119,8 @@ export type QueryStateArgs = {
 
 
 export type QueryStatesArgs = {
-  page: Scalars['Int'];
-  size: Scalars['Int'];
+  page?: Maybe<Scalars['Int']>;
+  size?: Maybe<Scalars['Int']>;
 };
 
 export type State = {
@@ -268,7 +271,7 @@ export type CountryResolvers<ContextType = MyContext, ParentType extends Resolve
   iso3?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   numeric_code?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   phone_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  states?: Resolver<Array<ResolversTypes['State']>, ParentType, ContextType, RequireFields<CountryStatesArgs, 'page' | 'size'>>;
+  states?: Resolver<Array<ResolversTypes['State']>, ParentType, ContextType, RequireFields<CountryStatesArgs, never>>;
   capital?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   currency?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   currency_symbol?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -294,10 +297,10 @@ export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<Resolver
 }
 
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  countries?: Resolver<Array<ResolversTypes['Country']>, ParentType, ContextType, RequireFields<QueryCountriesArgs, 'page' | 'size'>>;
+  countries?: Resolver<Array<ResolversTypes['Country']>, ParentType, ContextType, RequireFields<QueryCountriesArgs, never>>;
   country?: Resolver<Maybe<ResolversTypes['Country']>, ParentType, ContextType, RequireFields<QueryCountryArgs, never>>;
   state?: Resolver<Maybe<ResolversTypes['State']>, ParentType, ContextType, RequireFields<QueryStateArgs, never>>;
-  states?: Resolver<Array<ResolversTypes['State']>, ParentType, ContextType, RequireFields<QueryStatesArgs, 'page' | 'size'>>;
+  states?: Resolver<Array<ResolversTypes['State']>, ParentType, ContextType, RequireFields<QueryStatesArgs, never>>;
 };
 
 export type StateResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['State'] = ResolversParentTypes['State']> = {

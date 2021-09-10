@@ -7,9 +7,9 @@ const typeDefs = gql`
 
     """
     Get a list of states by page number and size.
-    Page is zero indexed.
+    Default: page = 0, size = 100.
     """
-    states(page: Int!, size: Int!): [State!]!
+    states(page: Int, size: Int): [State!]!
   }
 
   input StateCountryCodeInput {
