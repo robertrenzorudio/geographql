@@ -9,7 +9,11 @@ const resolvers: Resolvers = {
 
     cities: async (_, { filter, page }, ctx) => {
       const where = prismaWhere.many(
-        { country_code: filter?.ciso2, state_code: filter?.siso },
+        {
+          country_code: filter?.ciso2,
+          state_id: filter?.sid,
+          state_code: filter?.sid ? undefined : filter?.siso,
+        },
         'AND'
       );
 
