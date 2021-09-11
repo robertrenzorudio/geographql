@@ -9,7 +9,7 @@ const typeDefs = gql`
     Get a list of states by page number and size.
     Default: page = 0, size = 100.
     """
-    countries(page: Int, size: Int): [Country!]!
+    countries(filter: CountryFilterInput, page: PaginationInput): [Country!]!
   }
 
   type Country {
@@ -41,10 +41,14 @@ const typeDefs = gql`
     phone_code: String!
 
     """
-    Get a list of states/provinces/regions within the country by
-    page number and size. Default: page = 0, size = 100.
+    Get a list of states/provinces/regions within the country.
     """
-    states(page: Int, size: Int): [State!]!
+    states(page: PaginationInput): [State!]!
+
+    """
+    Get a list of cities within the country.
+    """
+    cities(filter: CountryCitiesFilterInput, page: PaginationInput): [State!]!
 
     "The capital city of the country."
     capital: String!
@@ -84,6 +88,22 @@ const typeDefs = gql`
 
     "The unicode of the country's emoji flag."
     emojiU: String!
+  }
+
+  input CountryFilterInput {
+    "Filter by region."
+    region: String
+
+    "Filter by subregion."
+    subregion: String
+  }
+
+  input CountryCitiesFilterInput {
+    "Filter by state id."
+    sid: Int
+
+    "Filter by state code."
+    siso: String
   }
 `;
 

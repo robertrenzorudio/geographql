@@ -15,8 +15,17 @@ const resolvers: Resolvers = {
       }
     },
 
-    countries: async (_, { page = 0, size = 100 }, ctx) => {
-      return ctx.db.country.findMany({ take: size!, skip: page! * size! });
+    countries: async (_, { filter, page }, ctx) => {
+      const where = prismaWhere.many({
+        subregion: filter?.subregion,
+        region: filter?.region,
+      });
+      const pagination = {
+        take: page ? page.size : 100,
+        skip: page ? page.page * page.size : 0,
+      };
+
+      return ctx.db.country.findMany({ where, ...pagination });
     },
   },
 
@@ -27,10 +36,30 @@ const resolvers: Resolvers = {
         .timezones();
     },
 
-    states: async (parent, { page = 0, size = 100 }, ctx) => {
+    states: async (parent, { page }, ctx) => {
+      const pagination = {
+        take: page ? page.size : 100,
+        skip: page ? page.page * page.size : 0,
+      };
       return await ctx.db.country
         .findUnique({ where: { id: parent.id } })
-        .states({ take: size!, skip: page! * size! });
+        .states(pagination);
+    },
+
+    cities: async (parent, { filter, page }, ctx) => {
+      const citiesWhere = prismaWhere.unique({
+        state_id: filter?.sid,
+        state_code: filter?.siso,
+      });
+
+      const pagination = {
+        take: page ? page.size : 100,
+        skip: page ? page.page * page.size : 0,
+      };
+
+      return await ctx.db.country
+        .findUnique({ where: { id: parent.id } })
+        .cities({ where: citiesWhere, ...pagination });
     },
   },
 };
