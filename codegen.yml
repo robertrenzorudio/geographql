@@ -10,6 +10,7 @@ generates:
       mappers:
         Country: '@prisma/client#Country'
         State: '@prisma/client#State'
+        City: "@prisma/client#City"
     plugins:
       - "typescript"
       - "typescript-resolvers"
