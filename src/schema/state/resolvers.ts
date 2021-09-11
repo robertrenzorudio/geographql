@@ -1,6 +1,5 @@
 import { UserInputError } from 'apollo-server-errors';
 import { Resolvers } from 'src/types/graphql';
-import pagination from 'src/utils/prismaPage';
 import { prismaPage, prismaWhere } from '../../utils';
 
 const resolvers: Resolvers = {
