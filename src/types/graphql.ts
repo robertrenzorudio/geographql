@@ -1,5 +1,5 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { Country as CountryModel, State as StateModel } from '@prisma/client';
+import { Country as CountryModel, State as StateModel, City as CityModel } from '@prisma/client';
 import { MyContext } from './context';
 export type Maybe<T> = T extends PromiseLike<infer U> ? Promise<U | null> : T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -15,6 +15,39 @@ export type Scalars = {
   Float: number;
   JSON: any;
   JSONObject: any;
+};
+
+export type City = {
+  __typename?: 'City';
+  /** The id of the city. */
+  id: Scalars['Int'];
+  /** The name of the city. */
+  name: Scalars['String'];
+  /** The id of the state where the city is located. */
+  state_id: Scalars['Int'];
+  /**
+   * The code designated to the state where
+   * the city is located.
+   */
+  state_code: Scalars['String'];
+  /** The id of the country where the city is located. */
+  country_id: Scalars['Int'];
+  /**
+   * The ISO Alpha-2 code designated to the
+   * country where the city is located.
+   */
+  country_code: Scalars['String'];
+  /** The latitude coordinate of the city. */
+  latitude: Scalars['Float'];
+  /** The longitude coordinate of the city. */
+  longitude: Scalars['Float'];
+};
+
+export type CityFilterInput = {
+  /** Filter by country ISO Alpha-2 code. */
+  ciso2: Scalars['ID'];
+  /** Filter by state code. */
+  siso?: Maybe<Scalars['String']>;
 };
 
 export type Country = {
@@ -79,8 +112,17 @@ export type CountryStatesArgs = {
   size?: Maybe<Scalars['Int']>;
 };
 
+export type PaginationInput = {
+  page: Scalars['Int'];
+  size: Scalars['Int'];
+};
+
 export type Query = {
   __typename?: 'Query';
+  /** Get a list of cities. */
+  cities: Array<City>;
+  /** Get a specific city by id. */
+  city?: Maybe<City>;
   /**
    * Get a list of states by page number and size.
    * Default: page = 0, size = 100.
@@ -95,6 +137,17 @@ export type Query = {
    * Default: page = 0, size = 100.
    */
   states: Array<State>;
+};
+
+
+export type QueryCitiesArgs = {
+  filter?: Maybe<CityFilterInput>;
+  page?: Maybe<PaginationInput>;
+};
+
+
+export type QueryCityArgs = {
+  id: Scalars['Int'];
 };
 
 
@@ -234,13 +287,16 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  Country: ResolverTypeWrapper<CountryModel>;
+  City: ResolverTypeWrapper<CityModel>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   String: ResolverTypeWrapper<Scalars['String']>;
-  ID: ResolverTypeWrapper<Scalars['ID']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
+  CityFilterInput: CityFilterInput;
+  ID: ResolverTypeWrapper<Scalars['ID']>;
+  Country: ResolverTypeWrapper<CountryModel>;
   JSON: ResolverTypeWrapper<Scalars['JSON']>;
   JSONObject: ResolverTypeWrapper<Scalars['JSONObject']>;
+  PaginationInput: PaginationInput;
   Query: ResolverTypeWrapper<{}>;
   State: ResolverTypeWrapper<StateModel>;
   StateCountryCodeInput: StateCountryCodeInput;
@@ -250,18 +306,33 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  Country: CountryModel;
+  City: CityModel;
   Int: Scalars['Int'];
   String: Scalars['String'];
-  ID: Scalars['ID'];
   Float: Scalars['Float'];
+  CityFilterInput: CityFilterInput;
+  ID: Scalars['ID'];
+  Country: CountryModel;
   JSON: Scalars['JSON'];
   JSONObject: Scalars['JSONObject'];
+  PaginationInput: PaginationInput;
   Query: {};
   State: StateModel;
   StateCountryCodeInput: StateCountryCodeInput;
   Timezone: Timezone;
   Boolean: Scalars['Boolean'];
+};
+
+export type CityResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['City'] = ResolversParentTypes['City']> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  state_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  state_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  country_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  country_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  latitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  longitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CountryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Country'] = ResolversParentTypes['Country']> = {
@@ -297,6 +368,8 @@ export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<Resolver
 }
 
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, never>>;
+  city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCityArgs, 'id'>>;
   countries?: Resolver<Array<ResolversTypes['Country']>, ParentType, ContextType, RequireFields<QueryCountriesArgs, never>>;
   country?: Resolver<Maybe<ResolversTypes['Country']>, ParentType, ContextType, RequireFields<QueryCountryArgs, never>>;
   state?: Resolver<Maybe<ResolversTypes['State']>, ParentType, ContextType, RequireFields<QueryStateArgs, never>>;
@@ -325,6 +398,7 @@ export type TimezoneResolvers<ContextType = MyContext, ParentType extends Resolv
 };
 
 export type Resolvers<ContextType = MyContext> = {
+  City?: CityResolvers<ContextType>;
   Country?: CountryResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   JSONObject?: GraphQLScalarType;
