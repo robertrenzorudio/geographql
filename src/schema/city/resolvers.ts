@@ -1,5 +1,5 @@
 import { Resolvers } from 'src/types/graphql';
-import { prismaWhere } from '../../utils';
+import { prismaWhere, prismaPage } from '../../utils';
 
 const resolvers: Resolvers = {
   Query: {
@@ -17,10 +17,7 @@ const resolvers: Resolvers = {
         'AND'
       );
 
-      const pagination = {
-        take: page ? page.size : 100,
-        skip: page ? page.page * page.size : 0,
-      };
+      const pagination = prismaPage(page);
 
       return ctx.db.city.findMany({
         where,

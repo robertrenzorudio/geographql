@@ -1,6 +1,7 @@
 import { UserInputError } from 'apollo-server-errors';
 import { Resolvers } from 'src/types/graphql';
-import { prismaWhere } from '../../utils';
+import pagination from 'src/utils/prismaPage';
+import { prismaPage, prismaWhere } from '../../utils';
 
 const resolvers: Resolvers = {
   Query: {
@@ -22,20 +23,17 @@ const resolvers: Resolvers = {
         country_id: filter?.cid,
         country_code: filter?.ciso2,
       });
-      const pagination = {
-        take: page ? page.size : 100,
-        skip: page ? page.page * page.size : 0,
-      };
+
+      const pagination = prismaPage(page);
+
       return ctx.db.state.findMany({ where, ...pagination });
     },
   },
 
   State: {
     cities: async (parent, { page }, ctx) => {
-      const pagination = {
-        take: page ? page.size : 100,
-        skip: page ? page.page * page.size : 0,
-      };
+      const pagination = prismaPage(page);
+
       return ctx.db.state
         .findUnique({ where: { id: parent.id } })
         .cities(pagination);
