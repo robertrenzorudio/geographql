@@ -46,7 +46,9 @@ export type City = {
 export type CityFilterInput = {
   /** Filter by country ISO Alpha-2 code. */
   ciso2: Scalars['ID'];
-  /** Filter by state code. */
+  /** Filter by state id withrin supplied csio2. */
+  sid?: Maybe<Scalars['Int']>;
+  /** Filter by state code within supplied csio2. */
   siso?: Maybe<Scalars['String']>;
 };
 
@@ -73,11 +75,10 @@ export type Country = {
   numeric_code: Scalars['ID'];
   /** The dialing code of the country. */
   phone_code: Scalars['String'];
-  /**
-   * Get a list of states/provinces/regions within the country by
-   * page number and size. Default: page = 0, size = 100.
-   */
+  /** Get a list of states/provinces/regions within the country. */
   states: Array<State>;
+  /** Get a list of cities within the country. */
+  cities: Array<State>;
   /** The capital city of the country. */
   capital: Scalars['String'];
   /** The currency of the country. */
@@ -108,8 +109,27 @@ export type Country = {
 
 
 export type CountryStatesArgs = {
-  page?: Maybe<Scalars['Int']>;
-  size?: Maybe<Scalars['Int']>;
+  page?: Maybe<PaginationInput>;
+};
+
+
+export type CountryCitiesArgs = {
+  filter?: Maybe<CountryCitiesFilterInput>;
+  page?: Maybe<PaginationInput>;
+};
+
+export type CountryCitiesFilterInput = {
+  /** Filter by state id. */
+  sid?: Maybe<Scalars['Int']>;
+  /** Filter by state code. */
+  siso?: Maybe<Scalars['String']>;
+};
+
+export type CountryFilterInput = {
+  /** Filter by region. */
+  region?: Maybe<Scalars['String']>;
+  /** Filter by subregion. */
+  subregion?: Maybe<Scalars['String']>;
 };
 
 export type PaginationInput = {
@@ -130,12 +150,9 @@ export type Query = {
   countries: Array<Country>;
   /** Get a specific country by id, iso2, iso3, or numeric_code. */
   country?: Maybe<Country>;
-  /** Get a specific state by id or by state_code, country_code pair. */
+  /** Get a specific state by id or by state_code and country_code pair. */
   state?: Maybe<State>;
-  /**
-   * Get a list of states by page number and size.
-   * Default: page = 0, size = 100.
-   */
+  /** Get a list of states by page number and size. */
   states: Array<State>;
 };
 
@@ -152,8 +169,8 @@ export type QueryCityArgs = {
 
 
 export type QueryCountriesArgs = {
-  page?: Maybe<Scalars['Int']>;
-  size?: Maybe<Scalars['Int']>;
+  filter?: Maybe<CountryFilterInput>;
+  page?: Maybe<PaginationInput>;
 };
 
 
@@ -172,8 +189,8 @@ export type QueryStateArgs = {
 
 
 export type QueryStatesArgs = {
-  page?: Maybe<Scalars['Int']>;
-  size?: Maybe<Scalars['Int']>;
+  filter?: Maybe<StateFilterInput>;
+  page?: Maybe<PaginationInput>;
 };
 
 export type State = {
@@ -188,24 +205,38 @@ export type State = {
    */
   state_code: Scalars['String'];
   /**
-   * The ISO Alpha-2 code designated to the
-   * country where the state is located.
-   */
-  country_code: Scalars['String'];
-  /**
    * The id of the country where the
    * the state is located.
    */
   country_id: Scalars['Int'];
+  /**
+   * The ISO Alpha-2 code designated to the
+   * country where the state is located.
+   */
+  country_code: Scalars['String'];
+  /** Get a list of cities within the state. */
+  cities: Array<City>;
   /** The latitude of the state. */
   latitude?: Maybe<Scalars['Float']>;
   /** The longitude of the state. */
   longitude?: Maybe<Scalars['Float']>;
 };
 
+
+export type StateCitiesArgs = {
+  page?: Maybe<PaginationInput>;
+};
+
 export type StateCountryCodeInput = {
   state_code: Scalars['String'];
   country_code: Scalars['String'];
+};
+
+export type StateFilterInput = {
+  /** Filter by country id */
+  cid?: Maybe<Scalars['Int']>;
+  /** Filter by country code */
+  ciso2?: Maybe<Scalars['String']>;
 };
 
 export type Timezone = {
@@ -294,12 +325,15 @@ export type ResolversTypes = {
   CityFilterInput: CityFilterInput;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Country: ResolverTypeWrapper<CountryModel>;
+  CountryCitiesFilterInput: CountryCitiesFilterInput;
+  CountryFilterInput: CountryFilterInput;
   JSON: ResolverTypeWrapper<Scalars['JSON']>;
   JSONObject: ResolverTypeWrapper<Scalars['JSONObject']>;
   PaginationInput: PaginationInput;
   Query: ResolverTypeWrapper<{}>;
   State: ResolverTypeWrapper<StateModel>;
   StateCountryCodeInput: StateCountryCodeInput;
+  StateFilterInput: StateFilterInput;
   Timezone: ResolverTypeWrapper<Timezone>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 };
@@ -313,12 +347,15 @@ export type ResolversParentTypes = {
   CityFilterInput: CityFilterInput;
   ID: Scalars['ID'];
   Country: CountryModel;
+  CountryCitiesFilterInput: CountryCitiesFilterInput;
+  CountryFilterInput: CountryFilterInput;
   JSON: Scalars['JSON'];
   JSONObject: Scalars['JSONObject'];
   PaginationInput: PaginationInput;
   Query: {};
   State: StateModel;
   StateCountryCodeInput: StateCountryCodeInput;
+  StateFilterInput: StateFilterInput;
   Timezone: Timezone;
   Boolean: Scalars['Boolean'];
 };
@@ -343,6 +380,7 @@ export type CountryResolvers<ContextType = MyContext, ParentType extends Resolve
   numeric_code?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   phone_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   states?: Resolver<Array<ResolversTypes['State']>, ParentType, ContextType, RequireFields<CountryStatesArgs, never>>;
+  cities?: Resolver<Array<ResolversTypes['State']>, ParentType, ContextType, RequireFields<CountryCitiesArgs, never>>;
   capital?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   currency?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   currency_symbol?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -380,8 +418,9 @@ export type StateResolvers<ContextType = MyContext, ParentType extends Resolvers
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   state_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  country_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   country_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  country_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<StateCitiesArgs, never>>;
   latitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   longitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

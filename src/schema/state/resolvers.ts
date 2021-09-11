@@ -17,8 +17,28 @@ const resolvers: Resolvers = {
       }
     },
 
-    states: async (_, { page = 0, size = 100 }, ctx) => {
-      return ctx.db.state.findMany({ take: size!, skip: page! * size! });
+    states: async (_, { filter, page }, ctx) => {
+      const where = prismaWhere.many({
+        country_id: filter?.cid,
+        country_code: filter?.ciso2,
+      });
+      const pagination = {
+        take: page ? page.size : 100,
+        skip: page ? page.page * page.size : 0,
+      };
+      return ctx.db.state.findMany({ where, ...pagination });
+    },
+  },
+
+  State: {
+    cities: async (parent, { page }, ctx) => {
+      const pagination = {
+        take: page ? page.size : 100,
+        skip: page ? page.page * page.size : 0,
+      };
+      return ctx.db.state
+        .findUnique({ where: { id: parent.id } })
+        .cities(pagination);
     },
   },
 };
