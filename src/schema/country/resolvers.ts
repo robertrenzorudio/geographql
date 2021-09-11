@@ -10,7 +10,7 @@ const resolvers: Resolvers = {
         return ctx.db.country.findUnique({ where });
       } else {
         throw new UserInputError(
-          'You must provide iso2 or iso3 or numeric_code'
+          'You must provide id, iso2, iso3 or numeric_code'
         );
       }
     },

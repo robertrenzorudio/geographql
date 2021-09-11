@@ -5,10 +5,7 @@ const typeDefs = gql`
     "Get a specific country by id, iso2, iso3, or numeric_code."
     country(id: Int, iso2: ID, iso3: ID, numeric_code: ID): Country
 
-    """
-    Get a list of states by page number and size.
-    Default: page = 0, size = 100.
-    """
+    "Get a list of states."
     countries(filter: CountryFilterInput, page: PaginationInput): [Country!]!
   }
 
@@ -48,7 +45,7 @@ const typeDefs = gql`
     """
     Get a list of cities within the country.
     """
-    cities(filter: CountryCitiesFilterInput, page: PaginationInput): [State!]!
+    cities(filter: CountryCitiesFilterInput, page: PaginationInput): [City!]!
 
     "The capital city of the country."
     capital: String!

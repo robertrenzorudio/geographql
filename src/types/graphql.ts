@@ -78,7 +78,7 @@ export type Country = {
   /** Get a list of states/provinces/regions within the country. */
   states: Array<State>;
   /** Get a list of cities within the country. */
-  cities: Array<State>;
+  cities: Array<City>;
   /** The capital city of the country. */
   capital: Scalars['String'];
   /** The currency of the country. */
@@ -143,10 +143,7 @@ export type Query = {
   cities: Array<City>;
   /** Get a specific city by id. */
   city?: Maybe<City>;
-  /**
-   * Get a list of states by page number and size.
-   * Default: page = 0, size = 100.
-   */
+  /** Get a list of states. */
   countries: Array<Country>;
   /** Get a specific country by id, iso2, iso3, or numeric_code. */
   country?: Maybe<Country>;
@@ -380,7 +377,7 @@ export type CountryResolvers<ContextType = MyContext, ParentType extends Resolve
   numeric_code?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   phone_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   states?: Resolver<Array<ResolversTypes['State']>, ParentType, ContextType, RequireFields<CountryStatesArgs, never>>;
-  cities?: Resolver<Array<ResolversTypes['State']>, ParentType, ContextType, RequireFields<CountryCitiesArgs, never>>;
+  cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<CountryCitiesArgs, never>>;
   capital?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   currency?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   currency_symbol?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
