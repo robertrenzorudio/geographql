@@ -275,8 +275,8 @@
     "currency_symbol": "$",
     "tld": ".aq",
     "native": "Antarctica",
-    "region": "Polar",
-    "subregion": "",
+    "region": "Antarctica",
+    "subregion": "Antarctica",
     "translations": {
       "kr": "남극",
       "br": "Antártida",
@@ -997,8 +997,8 @@
     "currency_symbol": "kr",
     "tld": ".bv",
     "native": "Bouvetøya",
-    "region": "",
-    "subregion": "",
+    "region": "Antarctica",
+    "subregion": "South Atlantic Ocean",
     "translations": {
       "kr": "부벳 섬",
       "br": "Ilha Bouvet",
@@ -3205,8 +3205,8 @@
     "currency_symbol": "$",
     "tld": ".hm",
     "native": "Heard Island and McDonald Islands",
-    "region": "",
-    "subregion": "",
+    "region": "Antarctica",
+    "subregion": "Indian Ocean",
     "translations": {
       "kr": "허드 맥도날드 제도",
       "br": "Ilha Heard e Ilhas McDonald",
@@ -6785,8 +6785,8 @@
     "currency_symbol": "£",
     "tld": ".gs",
     "native": "South Georgia",
-    "region": "Americas",
-    "subregion": "South America",
+    "region": "Antarctica",
+    "subregion": "South Atlantic Ocean",
     "translations": {
       "kr": "사우스조지아",
       "br": "Ilhas Geórgias do Sul e Sandwich do Sul",
