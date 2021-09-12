@@ -127,9 +127,9 @@ export type CountryCitiesFilterInput = {
 
 export type CountryFilterInput = {
   /** Filter by region. */
-  region?: Maybe<Scalars['String']>;
+  region?: Maybe<Region>;
   /** Filter by subregion. */
-  subregion?: Maybe<Scalars['String']>;
+  subregion?: Maybe<Subregion>;
 };
 
 export type PaginationInput = {
@@ -190,6 +190,15 @@ export type QueryStatesArgs = {
   page?: Maybe<PaginationInput>;
 };
 
+export enum Region {
+  Africa = 'Africa',
+  Americas = 'Americas',
+  Antarctica = 'Antarctica',
+  Asia = 'Asia',
+  Europe = 'Europe',
+  Oceania = 'Oceania'
+}
+
 export type State = {
   __typename?: 'State';
   /** The id of the state. */
@@ -235,6 +244,34 @@ export type StateFilterInput = {
   /** Filter by country code */
   ciso2?: Maybe<Scalars['String']>;
 };
+
+export enum Subregion {
+  Antarctica = 'Antarctica',
+  AustraliaAndNewZealand = 'Australia_and_New_Zealand',
+  Caribbean = 'Caribbean',
+  CentralAmerica = 'Central_America',
+  CentralAsia = 'Central_Asia',
+  EasternAfrica = 'Eastern_Africa',
+  EasternAsia = 'Eastern_Asia',
+  EasternEurope = 'Eastern_Europe',
+  IndianOcean = 'Indian_Ocean',
+  Melanesia = 'Melanesia',
+  Micronesia = 'Micronesia',
+  MiddleAfrica = 'Middle_Africa',
+  NorthernAfrica = 'Northern_Africa',
+  NorthernAmerica = 'Northern_America',
+  NorthernEurope = 'Northern_Europe',
+  Polynesia = 'Polynesia',
+  SouthAmerica = 'South_America',
+  SouthAtlanticOcean = 'South_Atlantic_Ocean',
+  SouthEasternAsia = 'South_Eastern_Asia',
+  SouthernAfrica = 'Southern_Africa',
+  SouthernEurope = 'Southern_Europe',
+  WesternAfrica = 'Western_Africa',
+  WesternAsia = 'Western_Asia',
+  WesternEurope = 'Western_Europe',
+  SouthernAsia = 'Southern_Asia'
+}
 
 export type Timezone = {
   __typename?: 'Timezone';
@@ -328,9 +365,11 @@ export type ResolversTypes = {
   JSONObject: ResolverTypeWrapper<Scalars['JSONObject']>;
   PaginationInput: PaginationInput;
   Query: ResolverTypeWrapper<{}>;
+  Region: Region;
   State: ResolverTypeWrapper<StateModel>;
   StateCountryCodeInput: StateCountryCodeInput;
   StateFilterInput: StateFilterInput;
+  Subregion: Subregion;
   Timezone: ResolverTypeWrapper<Timezone>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 };

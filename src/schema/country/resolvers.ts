@@ -1,6 +1,7 @@
 import { Resolvers } from '../../types/graphql';
 import { UserInputError } from 'apollo-server-errors';
 import { prismaWhere, prismaPage } from '../../utils';
+import { SubregionEnumToString } from './util';
 
 const resolvers: Resolvers = {
   Query: {
@@ -17,7 +18,9 @@ const resolvers: Resolvers = {
 
     countries: async (_, { filter, page }, ctx) => {
       const where = prismaWhere.many({
-        subregion: filter?.subregion,
+        subregion: filter?.subregion
+          ? SubregionEnumToString[filter.subregion]
+          : undefined,
         region: filter?.region,
       });
 
