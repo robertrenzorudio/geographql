@@ -6,7 +6,7 @@
 
 # env
 .env
-.dev.production
+.env.production
 
 # misc
 .DS_STORE
