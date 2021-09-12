@@ -5,9 +5,7 @@ const typeDefs = gql`
     "Get a specific city by id."
     city(id: Int!): City
 
-    """
-    Get a list of cities.
-    """
+    "Get a list of cities."
     cities(filter: CityFilterInput, page: PaginationInput): [City!]!
   }
 

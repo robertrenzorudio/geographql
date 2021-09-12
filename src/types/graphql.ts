@@ -143,13 +143,13 @@ export type Query = {
   cities: Array<City>;
   /** Get a specific city by id. */
   city?: Maybe<City>;
-  /** Get a list of states. */
+  /** Get a list of countries. */
   countries: Array<Country>;
   /** Get a specific country by id, iso2, iso3, or numeric_code. */
   country?: Maybe<Country>;
   /** Get a specific state by id or by state_code and country_code pair. */
   state?: Maybe<State>;
-  /** Get a list of states by page number and size. */
+  /** Get a list of states/provinces/regions. */
   states: Array<State>;
 };
 
@@ -275,11 +275,17 @@ export enum Subregion {
 
 export type Timezone = {
   __typename?: 'Timezone';
+  /** The zone name. */
   zone_name: Scalars['String'];
+  /** The Greenwich Mean Time offset in seconds */
   gmt_offset: Scalars['Int'];
+  /** Greenwich Mean Time offset name. */
   gmt_offset_name: Scalars['String'];
+  /** The abbreviation of the timezone name. */
   abbreviation: Scalars['String'];
+  /** The name of the timezone. */
   timezone_name: Scalars['String'];
+  /** The id of the country under the timezone. */
   country_id: Scalars['Int'];
 };
 

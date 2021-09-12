@@ -5,7 +5,7 @@ const typeDefs = gql`
     "Get a specific country by id, iso2, iso3, or numeric_code."
     country(id: Int, iso2: ID, iso3: ID, numeric_code: ID): Country
 
-    "Get a list of states."
+    "Get a list of countries."
     countries(filter: CountryFilterInput, page: PaginationInput): [Country!]!
   }
 

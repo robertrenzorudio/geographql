@@ -5,7 +5,7 @@ const typeDefs = gql`
     "Get a specific state by id or by state_code and country_code pair."
     state(id: Int, locationCode: StateCountryCodeInput): State
 
-    "Get a list of states by page number and size."
+    "Get a list of states/provinces/regions."
     states(filter: StateFilterInput, page: PaginationInput): [State!]!
   }
 
