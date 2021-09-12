@@ -2,16 +2,19 @@ require('dotenv').config();
 import { ApolloServer } from 'apollo-server-express';
 import express from 'express';
 import { buildSchema } from './schema';
+import prisma from './db';
 
 const main = async () => {
   const app = express();
 
   const schema = await buildSchema();
+
   const apolloServer = new ApolloServer({
     schema: schema,
     context: ({ req, res }) => ({
       req,
       res,
+      db: prisma,
     }),
   });
 

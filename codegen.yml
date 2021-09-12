@@ -2,7 +2,15 @@ overwrite: true
 schema: "src/schema/**/*.ts"
 documents: null
 generates:
-  src/types/graphql.d.ts:
+  src/types/graphql.ts:
+    config:
+      contextType: "./context#MyContext"
+      maybeValue: "T extends PromiseLike<infer U> ? Promise<U | null> : T | null"
+      mapperTypeSuffix: Model
+      mappers:
+        Country: '@prisma/client#Country'
+        State: '@prisma/client#State'
+        City: "@prisma/client#City"
     plugins:
       - "typescript"
       - "typescript-resolvers"

@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Country {
+  id              Int        @id
+  name            String     @db.VarChar(255)
+  iso2            String     @unique @db.Char(2)
+  iso3            String     @unique @db.Char(3)
+  numeric_code    String     @unique @db.Char(3)
+  phone_code      String     @db.VarChar(255)
+  states          State[]
+  cities          City[]
+  capital         String     @db.VarChar(255)
+  currency        String     @db.VarChar(255)
+  currency_symbol String     @db.VarChar(255)
+  tld             String     @db.Char(3)
+  native          String     @db.VarChar(255)
+  region          String     @db.VarChar(255)
+  subregion       String     @db.VarChar(255)
+  timezones       Timezone[]
+  translations    Json       @db.Json
+  latitude        Decimal    @db.Decimal(10, 8)
+  longitude       Decimal    @db.Decimal(11, 8)
+  emoji           String     @db.VarChar(255)
+  emojiU          String     @db.VarChar(255)
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @default(now())
+
+  @@unique([latitude, longitude])
+}
+
+model Timezone {
+  id              Int      @id
+  zone_name       String   @db.VarChar(255)
+  gmt_offset      Int
+  gmt_offset_name String   @db.VarChar(255)
+  abbreviation    String   @db.VarChar(255)
+  timezone_name   String   @db.VarChar(255)
+  Country         Country  @relation(fields: [country_id], references: [id])
+  country_id      Int
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+}
+
+model State {
+  id           Int      @id
+  name         String   @db.VarChar(255)
+  state_code   String   @db.VarChar(255)
+  country_code String   @db.VarChar(2)
+  country      Country  @relation(fields: [country_id], references: [id])
+  country_id   Int
+  cities       City[]
+  latitude     Decimal? @db.Decimal(10, 8)
+  longitude    Decimal? @db.Decimal(11, 8)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+
+  @@unique([state_code, country_code])
+}
+
+model City {
+  id           Int      @id
+  name         String   @db.VarChar(255)
+  state        State    @relation(fields: [state_id], references: [id])
+  state_id     Int
+  state_code   String   @db.VarChar(255)
+  country      Country  @relation(fields: [country_id], references: [id])
+  country_id   Int
+  country_code String   @db.VarChar(2)
+  latitude     Decimal  @db.Decimal(10, 8)
+  longitude    Decimal  @db.Decimal(11, 8)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+}
