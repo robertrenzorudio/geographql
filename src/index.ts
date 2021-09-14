@@ -15,8 +15,8 @@ const main = async () => {
     context: ({ req, res }) => ({
       req,
       res,
-      db: db,
-      cache: cache,
+      db,
+      cache,
     }),
   });
 
