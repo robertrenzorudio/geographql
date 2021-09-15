@@ -1,19 +1,25 @@
 import { Resolvers } from '../../types/graphql';
 import { UserInputError } from 'apollo-server-errors';
-import { prismaWhere, prismaPage } from '../../utils';
+import {
+  prismaWhere,
+  prismaPage,
+  createConnectionObject,
+  getCacheKey,
+} from '../../utils';
 import { SubregionEnumToString } from './util';
 
 const resolvers: Resolvers = {
   Query: {
     country: async (_, args, ctx) => {
-      const where = prismaWhere.unique(args);
-      if (where) {
-        return ctx.db.country.findUnique({ where });
-      } else {
+      const where = await prismaWhere.unique(args);
+
+      if (!where) {
         throw new UserInputError(
           'You must provide id, iso2, iso3 or numeric_code'
         );
       }
+
+      return ctx.db.country.findUnique({ where });
     },
 
     countries: async (_, { filter, page }, ctx) => {
@@ -26,7 +32,14 @@ const resolvers: Resolvers = {
 
       const pagination = prismaPage(page);
 
-      return ctx.db.country.findMany({ where, ...pagination });
+      const countries = await ctx.db.country.findMany({
+        where,
+        ...pagination,
+        orderBy: { id: 'asc' },
+      });
+
+      const cacheKeys = getCacheKey('Country');
+      return createConnectionObject({ data: countries, ctx, cacheKeys });
     },
   },
 
@@ -39,9 +52,19 @@ const resolvers: Resolvers = {
 
     states: async (parent, { page }, ctx) => {
       const pagination = prismaPage(page);
-      return await ctx.db.country
+
+      const states = await ctx.db.country
         .findUnique({ where: { id: parent.id } })
-        .states(pagination);
+        .states({ ...pagination, orderBy: { id: 'asc' } });
+
+      const cacheKeys = getCacheKey('Country', 'states');
+
+      return createConnectionObject({
+        data: states,
+        ctx,
+        cacheKeys,
+        parentId: parent.id,
+      });
     },
 
     cities: async (parent, { filter, page }, ctx) => {
@@ -52,9 +75,28 @@ const resolvers: Resolvers = {
 
       const pagination = prismaPage(page);
 
-      return await ctx.db.country
+      const cities = await ctx.db.country
         .findUnique({ where: { id: parent.id } })
         .cities({ where: citiesWhere, ...pagination });
+
+      if (citiesWhere && cities.length !== 0) {
+        const cacheKeys = getCacheKey('State', 'cities');
+
+        return createConnectionObject({
+          data: cities,
+          ctx,
+          cacheKeys,
+          parentId: cities[0].state_id,
+        });
+      }
+      const cacheKeys = getCacheKey('Country', 'cities');
+
+      return createConnectionObject({
+        data: cities,
+        ctx,
+        cacheKeys,
+        parentId: parent.id,
+      });
     },
   },
 };

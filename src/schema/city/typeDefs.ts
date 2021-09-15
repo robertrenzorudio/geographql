@@ -6,7 +6,7 @@ const typeDefs = gql`
     city(id: Int!): City
 
     "Get a list of cities."
-    cities(filter: CityFilterInput, page: PaginationInput): [City!]!
+    cities(filter: CityFilterInput, page: PaginationInput): CityConnection!
   }
 
   type City {
@@ -39,6 +39,20 @@ const typeDefs = gql`
 
     "The longitude coordinate of the city."
     longitude: Float!
+  }
+
+  type CityEdge {
+    "A cursor for use in the pagination."
+    cursor: String!
+
+    "The item at the end of the edge."
+    node: City!
+  }
+
+  type CityConnection {
+    totalCount: Int!
+    edges: [CityEdge!]!
+    pageInfo: PageInfo!
   }
 
   input CityFilterInput {

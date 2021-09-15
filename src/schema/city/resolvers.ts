@@ -1,5 +1,10 @@
 import { Resolvers } from 'src/types/graphql';
-import { prismaWhere, prismaPage } from '../../utils';
+import {
+  prismaWhere,
+  prismaPage,
+  getCacheKey,
+  createConnectionObject,
+} from '../../utils';
 
 const resolvers: Resolvers = {
   Query: {
@@ -19,10 +24,32 @@ const resolvers: Resolvers = {
 
       const pagination = prismaPage(page);
 
-      return ctx.db.city.findMany({
+      const cities = await ctx.db.city.findMany({
         where,
         ...pagination,
+        orderBy: { id: 'asc' },
       });
+
+      if (filter && cities.length !== 0) {
+        let parentId: number;
+        let cacheKeys: { minKey: string; maxKey: string };
+        if (filter.sid || filter.siso) {
+          parentId = cities[0].state_id;
+          cacheKeys = getCacheKey('State', 'cities');
+        } else {
+          parentId = cities[0].country_id;
+          cacheKeys = getCacheKey('Country', 'cities');
+        }
+        return createConnectionObject({
+          data: cities,
+          ctx,
+          cacheKeys,
+          parentId,
+        });
+      }
+
+      const cacheKeys = getCacheKey('City');
+      return createConnectionObject({ data: cities, ctx, cacheKeys });
     },
   },
 };
