@@ -5,6 +5,7 @@ export type Maybe<T> = T extends PromiseLike<infer U> ? Promise<U | null> : T | 
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -43,6 +44,21 @@ export type City = {
   longitude: Scalars['Float'];
 };
 
+export type CityConnection = {
+  __typename?: 'CityConnection';
+  totalCount: Scalars['Int'];
+  edges: Array<CityEdge>;
+  pageInfo: PageInfo;
+};
+
+export type CityEdge = {
+  __typename?: 'CityEdge';
+  /** A cursor for use in the pagination. */
+  cursor: Scalars['String'];
+  /** The item at the end of the edge. */
+  node: City;
+};
+
 export type CityFilterInput = {
   /** Filter by country ISO Alpha-2 code. */
   ciso2: Scalars['ID'];
@@ -76,9 +92,9 @@ export type Country = {
   /** The dialing code of the country. */
   phone_code: Scalars['String'];
   /** Get a list of states/provinces/regions within the country. */
-  states: Array<State>;
+  states: StateConnection;
   /** Get a list of cities within the country. */
-  cities: Array<City>;
+  cities: CityConnection;
   /** The capital city of the country. */
   capital: Scalars['String'];
   /** The currency of the country. */
@@ -125,6 +141,21 @@ export type CountryCitiesFilterInput = {
   siso?: Maybe<Scalars['String']>;
 };
 
+export type CountryConnection = {
+  __typename?: 'CountryConnection';
+  totalCount: Scalars['Int'];
+  edges: Array<CountryEdge>;
+  pageInfo: PageInfo;
+};
+
+export type CountryEdge = {
+  __typename?: 'CountryEdge';
+  /** A cursor for use in the pagination. */
+  cursor: Scalars['String'];
+  /** The item at the end of the edge. */
+  node: Country;
+};
+
 export type CountryFilterInput = {
   /** Filter by region. */
   region?: Maybe<Region>;
@@ -132,25 +163,49 @@ export type CountryFilterInput = {
   subregion?: Maybe<Subregion>;
 };
 
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  /**
+   * Indicates whether more edges exist,
+   * when paginating forward.
+   */
+  hasNextPage: Scalars['Boolean'];
+  /** The cursor to continue when paginating forward. */
+  endCursor?: Maybe<Scalars['String']>;
+  /**
+   * Indicates whether more edges exist,
+   * when paginating backwards.
+   */
+  hasPreviousPage: Scalars['Boolean'];
+  /** The cursor to continue when paginating backward. */
+  startCursor?: Maybe<Scalars['String']>;
+};
+
 export type PaginationInput = {
-  page: Scalars['Int'];
-  size: Scalars['Int'];
+  /** Returns the first n elements. */
+  first?: Maybe<Scalars['Int']>;
+  /** Returns the elements that come after the specified cursor. */
+  after?: Maybe<Scalars['String']>;
+  /** Returns the last n elements. */
+  last?: Maybe<Scalars['Int']>;
+  /** Returns the elements that come before the specified cursor. */
+  before?: Maybe<Scalars['String']>;
 };
 
 export type Query = {
   __typename?: 'Query';
   /** Get a list of cities. */
-  cities: Array<City>;
+  cities: CityConnection;
   /** Get a specific city by id. */
   city?: Maybe<City>;
   /** Get a list of countries. */
-  countries: Array<Country>;
+  countries: CountryConnection;
   /** Get a specific country by id, iso2, iso3, or numeric_code. */
   country?: Maybe<Country>;
   /** Get a specific state by id or by state_code and country_code pair. */
   state?: Maybe<State>;
   /** Get a list of states/provinces/regions. */
-  states: Array<State>;
+  states: StateConnection;
 };
 
 
@@ -221,7 +276,7 @@ export type State = {
    */
   country_code: Scalars['String'];
   /** Get a list of cities within the state. */
-  cities: Array<City>;
+  cities: CityConnection;
   /** The latitude of the state. */
   latitude?: Maybe<Scalars['Float']>;
   /** The longitude of the state. */
@@ -233,9 +288,24 @@ export type StateCitiesArgs = {
   page?: Maybe<PaginationInput>;
 };
 
+export type StateConnection = {
+  __typename?: 'StateConnection';
+  totalCount: Scalars['Int'];
+  edges: Array<StateEdge>;
+  pageInfo: PageInfo;
+};
+
 export type StateCountryCodeInput = {
   state_code: Scalars['String'];
   country_code: Scalars['String'];
+};
+
+export type StateEdge = {
+  __typename?: 'StateEdge';
+  /** A cursor for use in the pagination. */
+  cursor: Scalars['String'];
+  /** The item at the end of the edge. */
+  node: State;
 };
 
 export type StateFilterInput = {
@@ -362,22 +432,29 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
+  CityConnection: ResolverTypeWrapper<Omit<CityConnection, 'edges'> & { edges: Array<ResolversTypes['CityEdge']> }>;
+  CityEdge: ResolverTypeWrapper<Omit<CityEdge, 'node'> & { node: ResolversTypes['City'] }>;
   CityFilterInput: CityFilterInput;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Country: ResolverTypeWrapper<CountryModel>;
   CountryCitiesFilterInput: CountryCitiesFilterInput;
+  CountryConnection: ResolverTypeWrapper<Omit<CountryConnection, 'edges'> & { edges: Array<ResolversTypes['CountryEdge']> }>;
+  CountryEdge: ResolverTypeWrapper<Omit<CountryEdge, 'node'> & { node: ResolversTypes['Country'] }>;
   CountryFilterInput: CountryFilterInput;
   JSON: ResolverTypeWrapper<Scalars['JSON']>;
   JSONObject: ResolverTypeWrapper<Scalars['JSONObject']>;
+  PageInfo: ResolverTypeWrapper<PageInfo>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   PaginationInput: PaginationInput;
   Query: ResolverTypeWrapper<{}>;
   Region: Region;
   State: ResolverTypeWrapper<StateModel>;
+  StateConnection: ResolverTypeWrapper<Omit<StateConnection, 'edges'> & { edges: Array<ResolversTypes['StateEdge']> }>;
   StateCountryCodeInput: StateCountryCodeInput;
+  StateEdge: ResolverTypeWrapper<Omit<StateEdge, 'node'> & { node: ResolversTypes['State'] }>;
   StateFilterInput: StateFilterInput;
   Subregion: Subregion;
   Timezone: ResolverTypeWrapper<Timezone>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -386,20 +463,27 @@ export type ResolversParentTypes = {
   Int: Scalars['Int'];
   String: Scalars['String'];
   Float: Scalars['Float'];
+  CityConnection: Omit<CityConnection, 'edges'> & { edges: Array<ResolversParentTypes['CityEdge']> };
+  CityEdge: Omit<CityEdge, 'node'> & { node: ResolversParentTypes['City'] };
   CityFilterInput: CityFilterInput;
   ID: Scalars['ID'];
   Country: CountryModel;
   CountryCitiesFilterInput: CountryCitiesFilterInput;
+  CountryConnection: Omit<CountryConnection, 'edges'> & { edges: Array<ResolversParentTypes['CountryEdge']> };
+  CountryEdge: Omit<CountryEdge, 'node'> & { node: ResolversParentTypes['Country'] };
   CountryFilterInput: CountryFilterInput;
   JSON: Scalars['JSON'];
   JSONObject: Scalars['JSONObject'];
+  PageInfo: PageInfo;
+  Boolean: Scalars['Boolean'];
   PaginationInput: PaginationInput;
   Query: {};
   State: StateModel;
+  StateConnection: Omit<StateConnection, 'edges'> & { edges: Array<ResolversParentTypes['StateEdge']> };
   StateCountryCodeInput: StateCountryCodeInput;
+  StateEdge: Omit<StateEdge, 'node'> & { node: ResolversParentTypes['State'] };
   StateFilterInput: StateFilterInput;
   Timezone: Timezone;
-  Boolean: Scalars['Boolean'];
 };
 
 export type CityResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['City'] = ResolversParentTypes['City']> = {
@@ -414,6 +498,19 @@ export type CityResolvers<ContextType = MyContext, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type CityConnectionResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['CityConnection'] = ResolversParentTypes['CityConnection']> = {
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  edges?: Resolver<Array<ResolversTypes['CityEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CityEdgeResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['CityEdge'] = ResolversParentTypes['CityEdge']> = {
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['City'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type CountryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Country'] = ResolversParentTypes['Country']> = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -421,8 +518,8 @@ export type CountryResolvers<ContextType = MyContext, ParentType extends Resolve
   iso3?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   numeric_code?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   phone_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  states?: Resolver<Array<ResolversTypes['State']>, ParentType, ContextType, RequireFields<CountryStatesArgs, never>>;
-  cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<CountryCitiesArgs, never>>;
+  states?: Resolver<ResolversTypes['StateConnection'], ParentType, ContextType, RequireFields<CountryStatesArgs, never>>;
+  cities?: Resolver<ResolversTypes['CityConnection'], ParentType, ContextType, RequireFields<CountryCitiesArgs, never>>;
   capital?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   currency?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   currency_symbol?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -439,6 +536,19 @@ export type CountryResolvers<ContextType = MyContext, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type CountryConnectionResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['CountryConnection'] = ResolversParentTypes['CountryConnection']> = {
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  edges?: Resolver<Array<ResolversTypes['CountryEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CountryEdgeResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['CountryEdge'] = ResolversParentTypes['CountryEdge']> = {
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Country'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
   name: 'JSON';
 }
@@ -447,13 +557,21 @@ export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<Resolver
   name: 'JSONObject';
 }
 
+export type PageInfoResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = {
+  hasNextPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  endCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  hasPreviousPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  startCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, never>>;
+  cities?: Resolver<ResolversTypes['CityConnection'], ParentType, ContextType, RequireFields<QueryCitiesArgs, never>>;
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCityArgs, 'id'>>;
-  countries?: Resolver<Array<ResolversTypes['Country']>, ParentType, ContextType, RequireFields<QueryCountriesArgs, never>>;
+  countries?: Resolver<ResolversTypes['CountryConnection'], ParentType, ContextType, RequireFields<QueryCountriesArgs, never>>;
   country?: Resolver<Maybe<ResolversTypes['Country']>, ParentType, ContextType, RequireFields<QueryCountryArgs, never>>;
   state?: Resolver<Maybe<ResolversTypes['State']>, ParentType, ContextType, RequireFields<QueryStateArgs, never>>;
-  states?: Resolver<Array<ResolversTypes['State']>, ParentType, ContextType, RequireFields<QueryStatesArgs, never>>;
+  states?: Resolver<ResolversTypes['StateConnection'], ParentType, ContextType, RequireFields<QueryStatesArgs, never>>;
 };
 
 export type StateResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['State'] = ResolversParentTypes['State']> = {
@@ -462,9 +580,22 @@ export type StateResolvers<ContextType = MyContext, ParentType extends Resolvers
   state_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   country_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   country_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<StateCitiesArgs, never>>;
+  cities?: Resolver<ResolversTypes['CityConnection'], ParentType, ContextType, RequireFields<StateCitiesArgs, never>>;
   latitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   longitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type StateConnectionResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['StateConnection'] = ResolversParentTypes['StateConnection']> = {
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  edges?: Resolver<Array<ResolversTypes['StateEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type StateEdgeResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['StateEdge'] = ResolversParentTypes['StateEdge']> = {
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['State'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -480,11 +611,18 @@ export type TimezoneResolvers<ContextType = MyContext, ParentType extends Resolv
 
 export type Resolvers<ContextType = MyContext> = {
   City?: CityResolvers<ContextType>;
+  CityConnection?: CityConnectionResolvers<ContextType>;
+  CityEdge?: CityEdgeResolvers<ContextType>;
   Country?: CountryResolvers<ContextType>;
+  CountryConnection?: CountryConnectionResolvers<ContextType>;
+  CountryEdge?: CountryEdgeResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   JSONObject?: GraphQLScalarType;
+  PageInfo?: PageInfoResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   State?: StateResolvers<ContextType>;
+  StateConnection?: StateConnectionResolvers<ContextType>;
+  StateEdge?: StateEdgeResolvers<ContextType>;
   Timezone?: TimezoneResolvers<ContextType>;
 };
 
