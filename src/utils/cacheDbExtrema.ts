@@ -17,8 +17,10 @@ const cacheCountry = async () => {
     }[]
   >`SELECT MIN(id), MAX(id) FROM "Country"`;
 
-  await cache.set(getCacheKey('MIN', 'Country'), countryMin);
-  await cache.set(getCacheKey('MAX', 'Country'), countryMax);
+  const { minKey: countryMinKey, maxKey: countryMaxKey } =
+    getCacheKey('Country');
+  await cache.set(countryMinKey, countryMin);
+  await cache.set(countryMaxKey, countryMax);
 
   // Cache Min and Max id's of City by Country.
   const cityExtremaByCountryId = await db.$queryRaw<
@@ -32,8 +34,10 @@ const cacheCountry = async () => {
     cityMaxByCountryId[country_id] = max;
   });
 
-  await cache.hset(getCacheKey('MIN', 'Country', 'cities'), cityMinByCountryId);
-  await cache.hset(getCacheKey('MAX', 'Country', 'cities'), cityMaxByCountryId);
+  const { minKey: cityInCountryMinId, maxKey: cityInCountryMaxId } =
+    getCacheKey('Country', 'cities');
+  await cache.hset(cityInCountryMinId, cityMinByCountryId);
+  await cache.hset(cityInCountryMaxId, cityMaxByCountryId);
 
   // Cache Min and Max id's of State by Country.
   const stateExtremaByCountryId = await db.$queryRaw<
@@ -47,14 +51,10 @@ const cacheCountry = async () => {
     stateMaxByCountryId[country_id] = max;
   });
 
-  await cache.hset(
-    getCacheKey('MIN', 'Country', 'states'),
-    stateMinByCountryId
-  );
-  await cache.hset(
-    getCacheKey('MAX', 'Country', 'states'),
-    stateMaxByCountryId
-  );
+  const { minKey: stateInCountryMinId, maxKey: stateInCountryMaxId } =
+    getCacheKey('Country', 'states');
+  await cache.hset(stateInCountryMinId, stateMinByCountryId);
+  await cache.hset(stateInCountryMaxId, stateMaxByCountryId);
 };
 
 const cacheState = async () => {
@@ -66,8 +66,10 @@ const cacheState = async () => {
     }[]
   >`SELECT MIN(id), MAX(id) FROM "State"`;
 
-  await cache.set(getCacheKey('MIN', 'State'), stateMin);
-  await cache.set(getCacheKey('MAX', 'State'), stateMax);
+  const { minKey: stateMinKey, maxKey: stateMaxKey } = getCacheKey('State');
+
+  await cache.set(stateMinKey, stateMin);
+  await cache.set(stateMaxKey, stateMax);
 
   // Cache Min and Max id's of City by State.
   const cityExtremaByStateId = await db.$queryRaw<
@@ -81,8 +83,12 @@ const cacheState = async () => {
     cityMaxByStateId[state_id] = max;
   });
 
-  await cache.hset(getCacheKey('MIN', 'State', 'cities'), cityMinByStateId);
-  await cache.hset(getCacheKey('MAX', 'State', 'cities'), cityMaxByStateId);
+  const { minKey: stateInCityMinId, maxKey: stateInCityMaxId } = getCacheKey(
+    'State',
+    'cities'
+  );
+  await cache.hset(stateInCityMinId, cityMinByStateId);
+  await cache.hset(stateInCityMaxId, cityMaxByStateId);
 };
 
 const cacheCity = async () => {
@@ -94,8 +100,9 @@ const cacheCity = async () => {
     }[]
   >`SELECT MIN(id), MAX(id) FROM "City"`;
 
-  cache.set(getCacheKey('MIN', 'City'), cityMin);
-  cache.set(getCacheKey('MAX', 'City'), cityMax);
+  const { minKey: cityMinKey, maxKey: cityMaxKey } = getCacheKey('City');
+  cache.set(cityMinKey, cityMin);
+  cache.set(cityMaxKey, cityMax);
 };
 
 export default cacheDbExtrema;
