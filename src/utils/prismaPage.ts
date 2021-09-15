@@ -3,13 +3,13 @@ import { PaginationInput } from '../types/graphql';
 import { toCursorObject } from '../utils';
 
 const prismaPage = (
-  page: PaginationInput | undefined | null,
-  defaultCursor = 1,
-  defaultSize = 100
-) => {
-  const pagination = { take: defaultSize, cursor: { id: defaultCursor } };
-  if (!page) {
-    return pagination;
+  page: PaginationInput | undefined | null
+): { take: number; cursor: { id: number } | undefined } => {
+  if (!page || Object.keys(page).length === 0) {
+    return {
+      take: 100,
+      cursor: undefined,
+    };
   }
 
   const { first, after, last, before } = page;
@@ -25,20 +25,21 @@ const prismaPage = (
   if (last && !before) {
     throw new UserInputError('using last without before is not supported');
   }
-
+  let take: number;
   if (first) {
-    pagination.take = first;
+    take = first;
   } else {
-    pagination.take = -1 * last!;
+    take = -1 * last!;
   }
 
+  let cursor: { id: number } | undefined = undefined;
   if (after) {
-    pagination.cursor.id = toCursorObject(after).cursor + 1;
+    cursor = { id: toCursorObject(after).cursor + 1 };
   } else if (before) {
-    pagination.cursor.id = toCursorObject(before).cursor - 1;
+    cursor = { id: toCursorObject(before).cursor - 1 };
   }
 
-  return pagination;
+  return { take, cursor };
 };
 
 export default prismaPage;
