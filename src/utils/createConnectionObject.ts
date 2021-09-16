@@ -87,7 +87,7 @@ const createConnectionObject = async <T extends BaseDataType>(
 
   const queryFields = graphqlFields(info);
 
-  const edges = createEdges(data);
+  const edges = 'edges' in queryFields ? createEdges(data) : undefined;
 
   const pageInfo =
     'pageInfo' in queryFields
