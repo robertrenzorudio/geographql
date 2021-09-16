@@ -22,7 +22,7 @@ const resolvers: Resolvers = {
       return ctx.db.country.findUnique({ where });
     },
 
-    countries: async (_, { filter, page }, ctx) => {
+    countries: async (_, { filter, page }, ctx, info) => {
       const where = prismaWhere.many({
         subregion: filter?.subregion
           ? SubregionEnumToString[filter.subregion]
@@ -51,13 +51,14 @@ const resolvers: Resolvers = {
         return createConnectionObject({
           data: countries,
           ctx,
+          info,
           cacheKeys,
           cacheField,
         });
       }
 
       const cacheKeys = getCacheKeys('Country');
-      return createConnectionObject({ data: countries, ctx, cacheKeys });
+      return createConnectionObject({ data: countries, ctx, info, cacheKeys });
     },
   },
 
@@ -68,7 +69,7 @@ const resolvers: Resolvers = {
         .timezones();
     },
 
-    states: async (parent, { page }, ctx) => {
+    states: async (parent, { page }, ctx, info) => {
       const pagination = prismaPage(page);
 
       const states = await ctx.db.country
@@ -80,12 +81,14 @@ const resolvers: Resolvers = {
       return createConnectionObject({
         data: states,
         ctx,
+        info,
         cacheKeys,
+
         cacheField: parent.id,
       });
     },
 
-    cities: async (parent, { filter, page }, ctx) => {
+    cities: async (parent, { filter, page }, ctx, info) => {
       const citiesWhere = prismaWhere.unique({
         state_id: filter?.sid,
         state_code: filter?.siso,
@@ -103,6 +106,7 @@ const resolvers: Resolvers = {
         return createConnectionObject({
           data: cities,
           ctx,
+          info,
           cacheKeys,
           cacheField: cities[0].state_id,
         });
@@ -112,6 +116,7 @@ const resolvers: Resolvers = {
       return createConnectionObject({
         data: cities,
         ctx,
+        info,
         cacheKeys,
         cacheField: parent.id,
       });

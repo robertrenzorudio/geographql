@@ -1,6 +1,10 @@
 require('dotenv').config();
+import { GraphQLResolveInfo } from 'graphql';
+import graphqlFields from 'graphql-fields';
+import { PageInfo } from '../types/graphql';
 import { MyContext } from '../types/context';
 import { createEdges } from './createEdges';
+import { toCursorHash } from '.';
 
 const _hasNextPage = async (
   dataMaxId: number,
@@ -35,10 +39,39 @@ const _hasPreviousPage = async (
   return dataMinId > +minId!;
 };
 
+const _pageInfo = async <T extends BaseDataType>(
+  input: CreateConnectionObjectInput<T>,
+  pageInfo: any
+): Promise<PageInfo> => {
+  const { data, ctx, cacheKeys, cacheField } = input;
+  const dataMaxId = data.slice(-1)[0].id;
+  const dataMinId = data[0].id;
+
+  const hasNextPage =
+    'hasNextPage' in pageInfo
+      ? await _hasNextPage(dataMaxId, ctx, cacheKeys.maxKey, cacheField)
+      : undefined;
+
+  const hasPreviousPage =
+    'hasPreviousPage' in pageInfo
+      ? await _hasPreviousPage(dataMinId, ctx, cacheKeys.minKey, cacheField)
+      : undefined;
+
+  const endCursor = toCursorHash(dataMaxId);
+  const startCursor = toCursorHash(dataMinId);
+
+  return {
+    hasNextPage,
+    endCursor,
+    hasPreviousPage,
+    startCursor,
+  } as PageInfo;
+};
+
 const createConnectionObject = async <T extends BaseDataType>(
   input: CreateConnectionObjectInput<T>
 ): Promise<any> => {
-  const { data, ctx, cacheKeys, cacheField } = input;
+  const { data, info } = input;
   if (data.length === 0) {
     return {
       totalCount: data.length,
@@ -52,36 +85,19 @@ const createConnectionObject = async <T extends BaseDataType>(
     };
   }
 
-  const dataMaxId = data.slice(-1)[0].id;
-  const dataMinId = data[0].id;
-
-  const hasNextPage = await _hasNextPage(
-    dataMaxId,
-    ctx,
-    cacheKeys.maxKey,
-    cacheField
-  );
-  const hasPreviousPage = await _hasPreviousPage(
-    dataMinId,
-    ctx,
-    cacheKeys.minKey,
-    cacheField
-  );
+  const queryFields = graphqlFields(info);
 
   const edges = createEdges(data);
 
-  const endCursor = edges.slice(-1)[0].cursor;
-  const startCursor = edges[0].cursor;
+  const pageInfo =
+    'pageInfo' in queryFields
+      ? await _pageInfo(input, queryFields.pageInfo)
+      : undefined;
 
   const connectionData = {
     totalCount: data.length,
     edges,
-    pageInfo: {
-      hasNextPage,
-      endCursor,
-      hasPreviousPage,
-      startCursor,
-    },
+    pageInfo,
   };
   return connectionData;
 };
@@ -93,6 +109,7 @@ interface BaseDataType {
 interface CreateConnectionObjectInput<T> {
   data: T[];
   ctx: MyContext;
+  info: GraphQLResolveInfo;
   cacheKeys: { minKey: string; maxKey: string };
   cacheField?: number | string;
 }
