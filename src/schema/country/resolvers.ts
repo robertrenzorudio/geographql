@@ -4,7 +4,7 @@ import {
   prismaWhere,
   prismaPage,
   createConnectionObject,
-  getCacheKey,
+  getCacheKeys,
 } from '../../utils';
 import { SubregionEnumToString } from './util';
 
@@ -39,24 +39,24 @@ const resolvers: Resolvers = {
       });
 
       if (where && countries.length !== 0) {
-        let parentId: string;
+        let cacheField: string;
         let cacheKeys: { minKey: string; maxKey: string };
         if (filter?.subregion) {
-          cacheKeys = getCacheKey('Subregion', 'countries');
-          parentId = countries[0].subregion;
+          cacheKeys = getCacheKeys('Subregion', 'countries');
+          cacheField = countries[0].subregion;
         } else {
-          cacheKeys = getCacheKey('Region', 'countries');
-          parentId = countries[0].region;
+          cacheKeys = getCacheKeys('Region', 'countries');
+          cacheField = countries[0].region;
         }
         return createConnectionObject({
           data: countries,
           ctx,
           cacheKeys,
-          parentId,
+          cacheField,
         });
       }
 
-      const cacheKeys = getCacheKey('Country');
+      const cacheKeys = getCacheKeys('Country');
       return createConnectionObject({ data: countries, ctx, cacheKeys });
     },
   },
@@ -75,13 +75,13 @@ const resolvers: Resolvers = {
         .findUnique({ where: { id: parent.id } })
         .states({ ...pagination, orderBy: { id: 'asc' } });
 
-      const cacheKeys = getCacheKey('Country', 'states');
+      const cacheKeys = getCacheKeys('Country', 'states');
 
       return createConnectionObject({
         data: states,
         ctx,
         cacheKeys,
-        parentId: parent.id,
+        cacheField: parent.id,
       });
     },
 
@@ -98,22 +98,22 @@ const resolvers: Resolvers = {
         .cities({ where: citiesWhere, ...pagination });
 
       if (citiesWhere && cities.length !== 0) {
-        const cacheKeys = getCacheKey('State', 'cities');
+        const cacheKeys = getCacheKeys('State', 'cities');
 
         return createConnectionObject({
           data: cities,
           ctx,
           cacheKeys,
-          parentId: cities[0].state_id,
+          cacheField: cities[0].state_id,
         });
       }
-      const cacheKeys = getCacheKey('Country', 'cities');
+      const cacheKeys = getCacheKeys('Country', 'cities');
 
       return createConnectionObject({
         data: cities,
         ctx,
         cacheKeys,
-        parentId: parent.id,
+        cacheField: parent.id,
       });
     },
   },

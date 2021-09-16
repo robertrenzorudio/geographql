@@ -3,7 +3,7 @@ import { Resolvers } from 'src/types/graphql';
 import {
   prismaPage,
   prismaWhere,
-  getCacheKey,
+  getCacheKeys,
   createConnectionObject,
 } from '../../utils';
 
@@ -37,16 +37,16 @@ const resolvers: Resolvers = {
       });
 
       if (where && states.length !== 0) {
-        const cacheKeys = getCacheKey('Country', 'states');
+        const cacheKeys = getCacheKeys('Country', 'states');
         return createConnectionObject({
           data: states,
           ctx,
           cacheKeys,
-          parentId: states[0].country_id,
+          cacheField: states[0].country_id,
         });
       }
 
-      const cacheKeys = getCacheKey('State');
+      const cacheKeys = getCacheKeys('State');
       return createConnectionObject({ data: states, ctx, cacheKeys });
     },
   },
@@ -59,12 +59,12 @@ const resolvers: Resolvers = {
         .findUnique({ where: { id: parent.id } })
         .cities({ ...pagination, orderBy: { id: 'asc' } });
 
-      const cacheKeys = getCacheKey('State', 'cities');
+      const cacheKeys = getCacheKeys('State', 'cities');
       return createConnectionObject({
         data: cities,
         ctx,
         cacheKeys,
-        parentId: parent.id,
+        cacheField: parent.id,
       });
     },
   },
