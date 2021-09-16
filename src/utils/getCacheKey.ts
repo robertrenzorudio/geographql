@@ -1,4 +1,4 @@
-type ParentType = 'City' | 'Country' | 'State';
+type ParentType = 'City' | 'Country' | 'Region' | 'State' | 'Subregion';
 
 type FieldType = 'cities' | 'countries' | 'states';
 
