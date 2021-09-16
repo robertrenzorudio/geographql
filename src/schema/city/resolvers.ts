@@ -2,7 +2,7 @@ import { Resolvers } from 'src/types/graphql';
 import {
   prismaWhere,
   prismaPage,
-  getCacheKey,
+  getCacheKeys,
   createConnectionObject,
 } from '../../utils';
 
@@ -35,10 +35,10 @@ const resolvers: Resolvers = {
         let cacheKeys: { minKey: string; maxKey: string };
         if (filter.sid || filter.siso) {
           cacheField = cities[0].state_id;
-          cacheKeys = getCacheKey('State', 'cities');
+          cacheKeys = getCacheKeys('State', 'cities');
         } else {
           cacheField = cities[0].country_id;
-          cacheKeys = getCacheKey('Country', 'cities');
+          cacheKeys = getCacheKeys('Country', 'cities');
         }
         return createConnectionObject({
           data: cities,
@@ -48,7 +48,7 @@ const resolvers: Resolvers = {
         });
       }
 
-      const cacheKeys = getCacheKey('City');
+      const cacheKeys = getCacheKeys('City');
       return createConnectionObject({ data: cities, ctx, cacheKeys });
     },
   },

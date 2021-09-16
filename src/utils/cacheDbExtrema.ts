@@ -1,6 +1,6 @@
 import db from '../db';
 import cache from '../cache';
-import { getCacheKey } from '.';
+import { getCacheKeys } from '.';
 
 const cacheDbExtrema = async () => {
   await cacheCity();
@@ -18,7 +18,7 @@ const cacheCountry = async () => {
   >`SELECT MIN(id), MAX(id) FROM "Country"`;
 
   const { minKey: countryMinKey, maxKey: countryMaxKey } =
-    getCacheKey('Country');
+    getCacheKeys('Country');
 
   await cache
     .multi()
@@ -39,7 +39,7 @@ const cacheCountry = async () => {
   });
 
   const { minKey: countryInRegionMinId, maxKey: countryInRegionMaxId } =
-    getCacheKey('Region', 'countries');
+    getCacheKeys('Region', 'countries');
 
   await cache
     .multi()
@@ -60,7 +60,7 @@ const cacheCountry = async () => {
   });
 
   const { minKey: countryInSubRegionMinId, maxKey: countryInSubRegionMaxId } =
-    getCacheKey('Subregion', 'countries');
+    getCacheKeys('Subregion', 'countries');
 
   await cache
     .multi()
@@ -81,7 +81,7 @@ const cacheCountry = async () => {
   });
 
   const { minKey: cityInCountryMinId, maxKey: cityInCountryMaxId } =
-    getCacheKey('Country', 'cities');
+    getCacheKeys('Country', 'cities');
 
   await cache
     .multi()
@@ -102,7 +102,7 @@ const cacheCountry = async () => {
   });
 
   const { minKey: stateInCountryMinId, maxKey: stateInCountryMaxId } =
-    getCacheKey('Country', 'states');
+    getCacheKeys('Country', 'states');
 
   await cache
     .multi()
@@ -120,7 +120,7 @@ const cacheState = async () => {
     }[]
   >`SELECT MIN(id), MAX(id) FROM "State"`;
 
-  const { minKey: stateMinKey, maxKey: stateMaxKey } = getCacheKey('State');
+  const { minKey: stateMinKey, maxKey: stateMaxKey } = getCacheKeys('State');
 
   await cache
     .multi()
@@ -140,7 +140,7 @@ const cacheState = async () => {
     cityMaxByStateId[state_id] = max;
   });
 
-  const { minKey: stateInCityMinId, maxKey: stateInCityMaxId } = getCacheKey(
+  const { minKey: stateInCityMinId, maxKey: stateInCityMaxId } = getCacheKeys(
     'State',
     'cities'
   );
@@ -161,7 +161,7 @@ const cacheCity = async () => {
     }[]
   >`SELECT MIN(id), MAX(id) FROM "City"`;
 
-  const { minKey: cityMinKey, maxKey: cityMaxKey } = getCacheKey('City');
+  const { minKey: cityMinKey, maxKey: cityMaxKey } = getCacheKeys('City');
 
   await cache.multi().set(cityMinKey, cityMin).set(cityMaxKey, cityMax).exec();
 };

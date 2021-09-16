@@ -4,7 +4,7 @@ import {
   prismaWhere,
   prismaPage,
   createConnectionObject,
-  getCacheKey,
+  getCacheKeys,
 } from '../../utils';
 import { SubregionEnumToString } from './util';
 
@@ -42,10 +42,10 @@ const resolvers: Resolvers = {
         let cacheField: string;
         let cacheKeys: { minKey: string; maxKey: string };
         if (filter?.subregion) {
-          cacheKeys = getCacheKey('Subregion', 'countries');
+          cacheKeys = getCacheKeys('Subregion', 'countries');
           cacheField = countries[0].subregion;
         } else {
-          cacheKeys = getCacheKey('Region', 'countries');
+          cacheKeys = getCacheKeys('Region', 'countries');
           cacheField = countries[0].region;
         }
         return createConnectionObject({
@@ -56,7 +56,7 @@ const resolvers: Resolvers = {
         });
       }
 
-      const cacheKeys = getCacheKey('Country');
+      const cacheKeys = getCacheKeys('Country');
       return createConnectionObject({ data: countries, ctx, cacheKeys });
     },
   },
@@ -75,7 +75,7 @@ const resolvers: Resolvers = {
         .findUnique({ where: { id: parent.id } })
         .states({ ...pagination, orderBy: { id: 'asc' } });
 
-      const cacheKeys = getCacheKey('Country', 'states');
+      const cacheKeys = getCacheKeys('Country', 'states');
 
       return createConnectionObject({
         data: states,
@@ -98,7 +98,7 @@ const resolvers: Resolvers = {
         .cities({ where: citiesWhere, ...pagination });
 
       if (citiesWhere && cities.length !== 0) {
-        const cacheKeys = getCacheKey('State', 'cities');
+        const cacheKeys = getCacheKeys('State', 'cities');
 
         return createConnectionObject({
           data: cities,
@@ -107,7 +107,7 @@ const resolvers: Resolvers = {
           cacheField: cities[0].state_id,
         });
       }
-      const cacheKeys = getCacheKey('Country', 'cities');
+      const cacheKeys = getCacheKeys('Country', 'cities');
 
       return createConnectionObject({
         data: cities,

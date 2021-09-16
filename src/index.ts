@@ -4,7 +4,7 @@ import express from 'express';
 import { buildSchema } from './schema';
 import db from './db';
 import cache from './cache';
-// import { cacheDbExtrema } from './utils';
+import { cacheDbExtrema } from './utils';
 
 const main = async () => {
   const app = express();
@@ -24,7 +24,7 @@ const main = async () => {
   await apolloServer.start();
   apolloServer.applyMiddleware({ app });
 
-  // await cacheDbExtrema();
+  await cacheDbExtrema();
   const port = parseInt(process.env.PORT as string) || 4000;
 
   app.listen(port, () => {

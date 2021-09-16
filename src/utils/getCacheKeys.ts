@@ -2,7 +2,7 @@ type ParentType = 'City' | 'Country' | 'Region' | 'State' | 'Subregion';
 
 type FieldType = 'cities' | 'countries' | 'states';
 
-const getCacheKey = (
+const getCacheKeys = (
   parent: ParentType,
   field?: FieldType
 ): { minKey: string; maxKey: string } => {
@@ -13,4 +13,4 @@ const getCacheKey = (
     maxKey: `MAX:${key}`,
   };
 };
-export default getCacheKey;
+export default getCacheKeys;
