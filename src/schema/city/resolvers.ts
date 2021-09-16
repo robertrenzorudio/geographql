@@ -12,7 +12,7 @@ const resolvers: Resolvers = {
       return ctx.db.city.findUnique({ where: { id } });
     },
 
-    cities: async (_, { filter, page }, ctx) => {
+    cities: async (_, { filter, page }, ctx, info) => {
       const where = prismaWhere.many(
         {
           country_code: filter?.ciso2,
@@ -43,13 +43,14 @@ const resolvers: Resolvers = {
         return createConnectionObject({
           data: cities,
           ctx,
+          info,
           cacheKeys,
           cacheField,
         });
       }
 
       const cacheKeys = getCacheKeys('City');
-      return createConnectionObject({ data: cities, ctx, cacheKeys });
+      return createConnectionObject({ data: cities, ctx, info, cacheKeys });
     },
   },
 };

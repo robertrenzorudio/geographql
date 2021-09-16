@@ -22,7 +22,7 @@ const resolvers: Resolvers = {
       }
     },
 
-    states: async (_, { filter, page }, ctx) => {
+    states: async (_, { filter, page }, ctx, info) => {
       const where = prismaWhere.many({
         country_id: filter?.cid,
         country_code: filter?.ciso2,
@@ -41,18 +41,19 @@ const resolvers: Resolvers = {
         return createConnectionObject({
           data: states,
           ctx,
+          info,
           cacheKeys,
           cacheField: states[0].country_id,
         });
       }
 
       const cacheKeys = getCacheKeys('State');
-      return createConnectionObject({ data: states, ctx, cacheKeys });
+      return createConnectionObject({ data: states, ctx, info, cacheKeys });
     },
   },
 
   State: {
-    cities: async (parent, { page }, ctx) => {
+    cities: async (parent, { page }, ctx, info) => {
       const pagination = prismaPage(page);
 
       const cities = await ctx.db.state
@@ -63,6 +64,7 @@ const resolvers: Resolvers = {
       return createConnectionObject({
         data: cities,
         ctx,
+        info,
         cacheKeys,
         cacheField: parent.id,
       });
