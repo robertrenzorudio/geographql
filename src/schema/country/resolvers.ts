@@ -39,20 +39,20 @@ const resolvers: Resolvers = {
       });
 
       if (where && countries.length !== 0) {
-        let parentId: string;
+        let cacheField: string;
         let cacheKeys: { minKey: string; maxKey: string };
         if (filter?.subregion) {
           cacheKeys = getCacheKey('Subregion', 'countries');
-          parentId = countries[0].subregion;
+          cacheField = countries[0].subregion;
         } else {
           cacheKeys = getCacheKey('Region', 'countries');
-          parentId = countries[0].region;
+          cacheField = countries[0].region;
         }
         return createConnectionObject({
           data: countries,
           ctx,
           cacheKeys,
-          parentId,
+          cacheField,
         });
       }
 
@@ -81,7 +81,7 @@ const resolvers: Resolvers = {
         data: states,
         ctx,
         cacheKeys,
-        parentId: parent.id,
+        cacheField: parent.id,
       });
     },
 
@@ -104,7 +104,7 @@ const resolvers: Resolvers = {
           data: cities,
           ctx,
           cacheKeys,
-          parentId: cities[0].state_id,
+          cacheField: cities[0].state_id,
         });
       }
       const cacheKeys = getCacheKey('Country', 'cities');
@@ -113,7 +113,7 @@ const resolvers: Resolvers = {
         data: cities,
         ctx,
         cacheKeys,
-        parentId: parent.id,
+        cacheField: parent.id,
       });
     },
   },

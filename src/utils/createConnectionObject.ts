@@ -6,12 +6,12 @@ const _hasNextPage = async (
   dataMaxId: number,
   ctx: MyContext,
   maxKey: string,
-  parentId?: number | string
+  cacheField?: number | string
 ) => {
   let maxId: string | null;
 
-  if (parentId) {
-    maxId = await ctx.cache.hget(maxKey, parentId.toString());
+  if (cacheField) {
+    maxId = await ctx.cache.hget(maxKey, cacheField.toString());
   } else {
     maxId = await ctx.cache.get(maxKey);
   }
@@ -23,12 +23,12 @@ const _hasPreviousPage = async (
   dataMinId: number,
   ctx: MyContext,
   minKey: string,
-  parentId?: number | string
+  cacheField?: number | string
 ): Promise<boolean> => {
   let minId: string | null;
 
-  if (parentId) {
-    minId = await ctx.cache.hget(minKey, parentId.toString());
+  if (cacheField) {
+    minId = await ctx.cache.hget(minKey, cacheField.toString());
   } else {
     minId = await ctx.cache.get(minKey);
   }
@@ -38,7 +38,7 @@ const _hasPreviousPage = async (
 const createConnectionObject = async <T extends BaseDataType>(
   input: CreateConnectionObjectInput<T>
 ): Promise<any> => {
-  const { data, ctx, cacheKeys, parentId } = input;
+  const { data, ctx, cacheKeys, cacheField } = input;
   if (data.length === 0) {
     return {
       totalCount: data.length,
@@ -59,13 +59,13 @@ const createConnectionObject = async <T extends BaseDataType>(
     dataMaxId,
     ctx,
     cacheKeys.maxKey,
-    parentId
+    cacheField
   );
   const hasPreviousPage = await _hasPreviousPage(
     dataMinId,
     ctx,
     cacheKeys.minKey,
-    parentId
+    cacheField
   );
 
   const edges = createEdges(data);
@@ -94,7 +94,7 @@ interface CreateConnectionObjectInput<T> {
   data: T[];
   ctx: MyContext;
   cacheKeys: { minKey: string; maxKey: string };
-  parentId?: number | string;
+  cacheField?: number | string;
 }
 
 export default createConnectionObject;

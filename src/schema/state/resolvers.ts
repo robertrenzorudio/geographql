@@ -42,7 +42,7 @@ const resolvers: Resolvers = {
           data: states,
           ctx,
           cacheKeys,
-          parentId: states[0].country_id,
+          cacheField: states[0].country_id,
         });
       }
 
@@ -64,7 +64,7 @@ const resolvers: Resolvers = {
         data: cities,
         ctx,
         cacheKeys,
-        parentId: parent.id,
+        cacheField: parent.id,
       });
     },
   },

@@ -31,20 +31,20 @@ const resolvers: Resolvers = {
       });
 
       if (filter && cities.length !== 0) {
-        let parentId: number;
+        let cacheField: number;
         let cacheKeys: { minKey: string; maxKey: string };
         if (filter.sid || filter.siso) {
-          parentId = cities[0].state_id;
+          cacheField = cities[0].state_id;
           cacheKeys = getCacheKey('State', 'cities');
         } else {
-          parentId = cities[0].country_id;
+          cacheField = cities[0].country_id;
           cacheKeys = getCacheKey('Country', 'cities');
         }
         return createConnectionObject({
           data: cities,
           ctx,
           cacheKeys,
-          parentId,
+          cacheField,
         });
       }
 
