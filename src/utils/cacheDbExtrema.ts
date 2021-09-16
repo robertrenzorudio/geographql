@@ -26,6 +26,48 @@ const cacheCountry = async () => {
     .set(countryMaxKey, countryMax)
     .exec();
 
+  // Cache Min and Max id's of Country by region.
+  const countryExtremaByRegion = await db.$queryRaw<
+    { region: string; min: number; max: number }[]
+  >`SELECT region, MIN(id), MAX(id) FROM "Country" GROUP BY region;`;
+
+  let countryMinByRegion: Record<string, number> = {};
+  let countryMaxByRegion: Record<string, number> = {};
+  countryExtremaByRegion.forEach(({ region, min, max }) => {
+    countryMinByRegion[region] = min;
+    countryMaxByRegion[region] = max;
+  });
+
+  const { minKey: countryInRegionMinId, maxKey: countryInRegionMaxId } =
+    getCacheKey('Region', 'countries');
+
+  await cache
+    .multi()
+    .hset(countryInRegionMinId, countryMinByRegion)
+    .hset(countryInRegionMaxId, countryMaxByRegion)
+    .exec();
+
+  // Cache Min and Max id's of Country by subregion.
+  const countryExtremaBySubRegion = await db.$queryRaw<
+    { subregion: string; min: number; max: number }[]
+  >`SELECT subregion, MIN(id), MAX(id) FROM "Country" GROUP BY subregion;`;
+
+  let countryMinBySubRegion: Record<string, number> = {};
+  let countryMaxBySubRegion: Record<string, number> = {};
+  countryExtremaBySubRegion.forEach(({ subregion, min, max }) => {
+    countryMinBySubRegion[subregion] = min;
+    countryMaxBySubRegion[subregion] = max;
+  });
+
+  const { minKey: countryInSubRegionMinId, maxKey: countryInSubRegionMaxId } =
+    getCacheKey('Subregion', 'countries');
+
+  await cache
+    .multi()
+    .hset(countryInSubRegionMinId, countryMinBySubRegion)
+    .hset(countryInSubRegionMaxId, countryMaxBySubRegion)
+    .exec();
+
   // Cache Min and Max id's of City by Country.
   const cityExtremaByCountryId = await db.$queryRaw<
     { country_id: number; min: number; max: number }[]

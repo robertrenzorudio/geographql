@@ -38,6 +38,24 @@ const resolvers: Resolvers = {
         orderBy: { id: 'asc' },
       });
 
+      if (where && countries.length !== 0) {
+        let parentId: string;
+        let cacheKeys: { minKey: string; maxKey: string };
+        if (filter?.subregion) {
+          cacheKeys = getCacheKey('Subregion', 'countries');
+          parentId = countries[0].subregion;
+        } else {
+          cacheKeys = getCacheKey('Region', 'countries');
+          parentId = countries[0].region;
+        }
+        return createConnectionObject({
+          data: countries,
+          ctx,
+          cacheKeys,
+          parentId,
+        });
+      }
+
       const cacheKeys = getCacheKey('Country');
       return createConnectionObject({ data: countries, ctx, cacheKeys });
     },
