@@ -4,8 +4,9 @@ import express from 'express';
 import { buildSchema } from './schema';
 import prisma from './prisma';
 import redis from './redis';
-import { cacheDbExtrema } from './utils';
 import { MyContext } from './types/context';
+import schedule from 'node-schedule';
+import { cacheDbExtrema } from './utils';
 
 const main = async () => {
   const app = express();
@@ -25,7 +26,14 @@ const main = async () => {
   await apolloServer.start();
   apolloServer.applyMiddleware({ app });
 
-  await cacheDbExtrema();
+  if (process.env.NODE_ENV === 'production') {
+    await cacheDbExtrema();
+  }
+  // Refresh cache every midnight.
+  schedule.scheduleJob('0 0 * * *', async () => {
+    console.log("Caching Max and Min id's");
+    await cacheDbExtrema();
+  });
   const port = parseInt(process.env.PORT as string) || 4000;
 
   app.listen(port, () => {
