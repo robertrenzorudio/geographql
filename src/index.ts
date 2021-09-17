@@ -7,9 +7,16 @@ import redis from './redis';
 import { MyContext } from './types/context';
 import schedule from 'node-schedule';
 import { cacheDbExtrema } from './utils';
+import { authRouter } from './routes/auth';
+import passport from 'passport';
 
 const main = async () => {
   const app = express();
+
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  app.use('/auth', authRouter);
 
   const schema = await buildSchema();
 
@@ -34,6 +41,7 @@ const main = async () => {
     console.log("Caching Max and Min id's");
     await cacheDbExtrema();
   });
+
   const port = parseInt(process.env.PORT as string) || 4000;
 
   app.listen(port, () => {
