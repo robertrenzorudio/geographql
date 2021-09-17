@@ -2,9 +2,10 @@ require('dotenv').config();
 import { ApolloServer } from 'apollo-server-express';
 import express from 'express';
 import { buildSchema } from './schema';
-import db from './db';
-import cache from './cache';
+import prisma from './prisma';
+import redis from './redis';
 import { cacheDbExtrema } from './utils';
+import { MyContext } from './types/context';
 
 const main = async () => {
   const app = express();
@@ -13,11 +14,11 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: schema,
-    context: ({ req, res }) => ({
+    context: ({ req, res }): MyContext => ({
       req,
       res,
-      db,
-      cache,
+      db: prisma,
+      cache: redis,
     }),
   });
 

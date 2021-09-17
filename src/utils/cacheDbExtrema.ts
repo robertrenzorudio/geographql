@@ -1,5 +1,5 @@
-import db from '../db';
-import cache from '../cache';
+import db from '../prisma';
+import cache from '../redis';
 import { getCacheKeys } from '.';
 
 const cacheDbExtrema = async () => {
