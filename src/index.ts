@@ -14,7 +14,6 @@ const main = async () => {
   const app = express();
 
   app.use(passport.initialize());
-  app.use(passport.session());
 
   app.use('/auth', authRouter);
 
