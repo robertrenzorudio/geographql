@@ -33,7 +33,7 @@ model Country {
   emoji           String     @db.VarChar(255)
   emojiU          String     @db.VarChar(255)
   created_at      DateTime   @default(now())
-  updated_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
 
   @@unique([latitude, longitude])
 }
@@ -48,7 +48,7 @@ model Timezone {
   Country         Country  @relation(fields: [country_id], references: [id])
   country_id      Int
   created_at      DateTime @default(now())
-  updated_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 }
 
 model State {
@@ -62,7 +62,7 @@ model State {
   latitude     Decimal? @db.Decimal(10, 8)
   longitude    Decimal? @db.Decimal(11, 8)
   created_at   DateTime @default(now())
-  updated_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 
   @@unique([state_code, country_code])
 }
@@ -79,17 +79,18 @@ model City {
   latitude     Decimal  @db.Decimal(10, 8)
   longitude    Decimal  @db.Decimal(11, 8)
   created_at   DateTime @default(now())
-  updated_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 }
 
 model User {
   id           String   @id @default(uuid())
   strategy     Strategy
   profile_id   String   @db.VarChar(255)
-  username     String   @db.VarChar(255)
   email        String   @db.VarChar(255)
   request_left Int
-  api_key      String   @unique @default(uuid()) @db.VarChar(255)
+  api_key      String   @unique @db.VarChar(255)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 
   @@unique([strategy, profile_id])
 }
