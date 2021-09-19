@@ -99,8 +99,9 @@ authRouter.get(
   }),
   (req, res) => {
     const {
-      user: { api_key },
+      user: { profile_id, api_key },
     } = req.user as { user: User };
+    req.session.userId = profile_id;
     res.json({ api_key });
   }
 );
@@ -118,8 +119,9 @@ authRouter.get(
   }),
   (req, res) => {
     const {
-      user: { api_key },
+      user: { profile_id, api_key },
     } = req.user as { user: User };
+    req.session.userId = profile_id;
     res.json({ api_key });
   }
 );
