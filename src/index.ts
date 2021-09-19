@@ -1,18 +1,50 @@
 require('dotenv').config();
 import { ApolloServer } from 'apollo-server-express';
-import express from 'express';
+import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
+import { authRouter } from './routes/auth';
 import { buildSchema } from './schema';
+import { cacheDbExtrema } from './utils';
+import connectRedis from 'connect-redis';
+import express from 'express';
+import { MyContext } from './types/context';
+import passport from 'passport';
 import prisma from './prisma';
 import redis from './redis';
-import { MyContext } from './types/context';
 import schedule from 'node-schedule';
-import { cacheDbExtrema } from './utils';
-import { authRouter } from './routes/auth';
-import passport from 'passport';
+import session from 'express-session';
+
+declare module 'express-session' {
+  interface Session {
+    userId: string;
+  }
+}
 
 const main = async () => {
   const app = express();
+  const RedisStore = connectRedis(session);
 
+  app.set('trust proxy', 1);
+  app.use(
+    session({
+      name: process.env.SESSION_NAME!,
+      store: new RedisStore({
+        client: redis,
+        disableTouch: true,
+      }),
+      secret: process.env.SESSION_SECRET!,
+      cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        domain:
+          process.env.NODE_ENV === 'production'
+            ? process.env.SESSION_DOMAIN!
+            : undefined,
+      },
+      saveUninitialized: false,
+      resave: false,
+    })
+  );
   app.use(passport.initialize());
 
   app.use('/auth', authRouter);
@@ -27,6 +59,8 @@ const main = async () => {
       db: prisma,
       cache: redis,
     }),
+    introspection: true,
+    plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 
   await apolloServer.start();
