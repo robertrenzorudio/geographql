@@ -163,6 +163,14 @@ export type CountryFilterInput = {
   subregion?: Maybe<Subregion>;
 };
 
+export type Mutation = {
+  __typename?: 'Mutation';
+  /** End your session. */
+  logout: Scalars['Boolean'];
+  /** Refresh your api key. */
+  refreshAPIKey?: Maybe<Scalars['String']>;
+};
+
 export type PageInfo = {
   __typename?: 'PageInfo';
   /**
@@ -202,6 +210,8 @@ export type Query = {
   countries: CountryConnection;
   /** Get a specific country by id, iso2, iso3, or numeric_code. */
   country?: Maybe<Country>;
+  /** Get your profile. */
+  me?: Maybe<User>;
   /** Get a specific state by id or by state_code and country_code pair. */
   state?: Maybe<State>;
   /** Get a list of states/provinces/regions. */
@@ -359,6 +369,22 @@ export type Timezone = {
   country_id: Scalars['Int'];
 };
 
+export type User = {
+  __typename?: 'User';
+  /** User id. */
+  id: Scalars['String'];
+  /** Strategy used for authentication. */
+  strategy: Scalars['String'];
+  /** User Id from strategy. */
+  profile_id: Scalars['String'];
+  /** User email address. */
+  email: Scalars['String'];
+  /** Number of request left. */
+  request_left: Scalars['Int'];
+  /** User api key. */
+  api_key: Scalars['String'];
+};
+
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -443,8 +469,9 @@ export type ResolversTypes = {
   CountryFilterInput: CountryFilterInput;
   JSON: ResolverTypeWrapper<Scalars['JSON']>;
   JSONObject: ResolverTypeWrapper<Scalars['JSONObject']>;
-  PageInfo: ResolverTypeWrapper<PageInfo>;
+  Mutation: ResolverTypeWrapper<{}>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  PageInfo: ResolverTypeWrapper<PageInfo>;
   PaginationInput: PaginationInput;
   Query: ResolverTypeWrapper<{}>;
   Region: Region;
@@ -455,6 +482,7 @@ export type ResolversTypes = {
   StateFilterInput: StateFilterInput;
   Subregion: Subregion;
   Timezone: ResolverTypeWrapper<Timezone>;
+  User: ResolverTypeWrapper<User>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -474,8 +502,9 @@ export type ResolversParentTypes = {
   CountryFilterInput: CountryFilterInput;
   JSON: Scalars['JSON'];
   JSONObject: Scalars['JSONObject'];
-  PageInfo: PageInfo;
+  Mutation: {};
   Boolean: Scalars['Boolean'];
+  PageInfo: PageInfo;
   PaginationInput: PaginationInput;
   Query: {};
   State: StateModel;
@@ -484,6 +513,7 @@ export type ResolversParentTypes = {
   StateEdge: Omit<StateEdge, 'node'> & { node: ResolversParentTypes['State'] };
   StateFilterInput: StateFilterInput;
   Timezone: Timezone;
+  User: User;
 };
 
 export type CityResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['City'] = ResolversParentTypes['City']> = {
@@ -557,6 +587,11 @@ export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<Resolver
   name: 'JSONObject';
 }
 
+export type MutationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  refreshAPIKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+};
+
 export type PageInfoResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = {
   hasNextPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   endCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -570,6 +605,7 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCityArgs, 'id'>>;
   countries?: Resolver<ResolversTypes['CountryConnection'], ParentType, ContextType, RequireFields<QueryCountriesArgs, never>>;
   country?: Resolver<Maybe<ResolversTypes['Country']>, ParentType, ContextType, RequireFields<QueryCountryArgs, never>>;
+  me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   state?: Resolver<Maybe<ResolversTypes['State']>, ParentType, ContextType, RequireFields<QueryStateArgs, never>>;
   states?: Resolver<ResolversTypes['StateConnection'], ParentType, ContextType, RequireFields<QueryStatesArgs, never>>;
 };
@@ -609,6 +645,16 @@ export type TimezoneResolvers<ContextType = MyContext, ParentType extends Resolv
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type UserResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  strategy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  profile_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  request_left?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  api_key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = MyContext> = {
   City?: CityResolvers<ContextType>;
   CityConnection?: CityConnectionResolvers<ContextType>;
@@ -618,11 +664,13 @@ export type Resolvers<ContextType = MyContext> = {
   CountryEdge?: CountryEdgeResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   JSONObject?: GraphQLScalarType;
+  Mutation?: MutationResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   State?: StateResolvers<ContextType>;
   StateConnection?: StateConnectionResolvers<ContextType>;
   StateEdge?: StateEdgeResolvers<ContextType>;
   Timezone?: TimezoneResolvers<ContextType>;
+  User?: UserResolvers<ContextType>;
 };
 
