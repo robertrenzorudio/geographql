@@ -4,9 +4,9 @@ import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-co
 import { authRouter } from './routes/auth';
 import { buildSchema } from './schema';
 import { cacheDbExtrema } from './utils';
+import { CalculateQueryComplexity } from './apolloPlugins/CalculateQueryComplexity';
 import connectRedis from 'connect-redis';
 import express from 'express';
-import { MyContext } from './types/context';
 import passport from 'passport';
 import prisma from './prisma';
 import redis from './redis';
@@ -53,14 +53,17 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: schema,
-    context: ({ req, res }): MyContext => ({
+    context: ({ req, res }) => ({
       req,
       res,
       db: prisma,
       cache: redis,
     }),
     introspection: true,
-    plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
+    plugins: [
+      ApolloServerPluginLandingPageGraphQLPlayground(),
+      CalculateQueryComplexity(schema, 1000),
+    ],
   });
 
   await apolloServer.start();
