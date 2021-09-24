@@ -19,6 +19,7 @@ const resolvers: Resolvers = {
         );
       }
 
+      ctx.req.queryCost = ctx.req.queryCost + 1 || 1;
       return ctx.db.country.findUnique({ where });
     },
 
@@ -37,6 +38,9 @@ const resolvers: Resolvers = {
         ...pagination,
         orderBy: { id: 'asc' },
       });
+
+      ctx.req.queryCost =
+        ctx.req.queryCost + countries.length || countries.length;
 
       if (where && countries.length !== 0) {
         let cacheField: string;
@@ -76,6 +80,7 @@ const resolvers: Resolvers = {
         .findUnique({ where: { id: parent.id } })
         .states({ ...pagination, orderBy: { id: 'asc' } });
 
+      ctx.req.queryCost = ctx.req.queryCost + states.length || states.length;
       const cacheKeys = getCacheKeys('Country', 'states');
 
       return createConnectionObject({
@@ -99,6 +104,8 @@ const resolvers: Resolvers = {
       const cities = await ctx.db.country
         .findUnique({ where: { id: parent.id } })
         .cities({ where: citiesWhere, ...pagination });
+
+      ctx.req.queryCost = ctx.req.queryCost + cities.length || cities.length;
 
       if (citiesWhere && cities.length !== 0) {
         const cacheKeys = getCacheKeys('State', 'cities');

@@ -516,6 +516,11 @@ export type ResolversParentTypes = {
   User: User;
 };
 
+export type ComplexityDirectiveArgs = {   value: Scalars['Int'];
+  multipliers?: Maybe<Array<Scalars['String']>>; };
+
+export type ComplexityDirectiveResolver<Result, Parent, ContextType = MyContext, Args = ComplexityDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
 export type CityResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['City'] = ResolversParentTypes['City']> = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -674,3 +679,6 @@ export type Resolvers<ContextType = MyContext> = {
   User?: UserResolvers<ContextType>;
 };
 
+export type DirectiveResolvers<ContextType = MyContext> = {
+  complexity?: ComplexityDirectiveResolver<any, any, ContextType>;
+};

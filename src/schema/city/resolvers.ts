@@ -9,6 +9,7 @@ import {
 const resolvers: Resolvers = {
   Query: {
     city: async (_, { id }, ctx) => {
+      ctx.req.queryCost = ctx.req.queryCost + 1 || 1;
       return ctx.db.city.findUnique({ where: { id } });
     },
 
@@ -29,6 +30,8 @@ const resolvers: Resolvers = {
         ...pagination,
         orderBy: { id: 'asc' },
       });
+
+      ctx.req.queryCost = ctx.req.queryCost + cities.length || cities.length;
 
       if (filter && cities.length !== 0) {
         let cacheField: number;

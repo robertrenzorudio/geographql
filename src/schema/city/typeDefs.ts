@@ -3,10 +3,11 @@ import { gql } from 'graphql-tag';
 const typeDefs = gql`
   type Query {
     "Get a specific city by id."
-    city(id: Int!): City
+    city(id: Int!): City @complexity(value: 1)
 
     "Get a list of cities."
     cities(filter: CityFilterInput, page: PaginationInput): CityConnection!
+      @complexity(value: 1, multipliers: ["page.first", "page.last"])
   }
 
   type City {
