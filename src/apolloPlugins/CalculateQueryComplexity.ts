@@ -35,7 +35,7 @@ export const CalculateQueryComplexity = (
         });
 
         if (complexity >= maxComplexity) {
-          throw new Error(
+          throw new UserRequestError(
             `Query is too complex: ${complexity}. Maximum allowed complexity: ${maxComplexity}`
           );
         }
@@ -53,7 +53,7 @@ export const CalculateQueryComplexity = (
         });
 
         if (isOverLimit) {
-          throw new ResourceError(
+          throw new UserRequestError(
             `Not enough points: estimated query cost: ${complexity}, points left: ${pointsLeft}`
           );
         }
@@ -136,10 +136,10 @@ const getCurrentTotalWithIp = async (
   return Math.abs(+currentTotal);
 };
 
-class ResourceError extends ApolloError {
+class UserRequestError extends ApolloError {
   constructor(message: string) {
-    super(message, 'RESOURE_ERROR');
+    super(message, 'TOO_MANY_REQUESTS');
 
-    Object.defineProperty(this, 'name', { value: 'myerror' });
+    Object.defineProperty(this, 'name', { value: 'ExceedLimitError' });
   }
 }
