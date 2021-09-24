@@ -6,10 +6,7 @@ const prismaPage = (
   page: PaginationInput | undefined | null
 ): { take: number; cursor: { id: number } | undefined } => {
   if (!page || Object.keys(page).length === 0) {
-    return {
-      take: 100,
-      cursor: undefined,
-    };
+    throw new UserInputError('you must provide at least first');
   }
 
   const { first, after, last, before } = page;
