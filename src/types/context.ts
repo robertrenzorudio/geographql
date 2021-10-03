@@ -1,8 +1,12 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import type { PrismaClient } from '@prisma/client';
+import type { Redis } from 'ioredis';
+
+export type MyRequest = Request & { queryCost: number };
 
 export type MyContext = {
-  req: Request;
+  req: MyRequest;
   res: Response;
   db: PrismaClient;
+  cache: Redis;
 };

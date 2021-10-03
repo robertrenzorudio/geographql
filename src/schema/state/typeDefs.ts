@@ -4,9 +4,11 @@ const typeDefs = gql`
   type Query {
     "Get a specific state by id or by state_code and country_code pair."
     state(id: Int, locationCode: StateCountryCodeInput): State
+      @complexity(value: 1)
 
     "Get a list of states/provinces/regions."
-    states(filter: StateFilterInput, page: PaginationInput): [State!]!
+    states(filter: StateFilterInput, page: PaginationInput): StateConnection!
+      @complexity(value: 1, multipliers: ["page.first", "page.last"])
   }
 
   type State {
@@ -35,13 +37,28 @@ const typeDefs = gql`
     country_code: String!
 
     "Get a list of cities within the state."
-    cities(page: PaginationInput): [City!]!
+    cities(page: PaginationInput): CityConnection!
+      @complexity(value: 1, multipliers: ["page.first", "page.last"])
 
     "The latitude of the state."
     latitude: Float
 
     "The longitude of the state."
     longitude: Float
+  }
+
+  type StateEdge {
+    "A cursor for use in the pagination."
+    cursor: String!
+
+    "The item at the end of the edge."
+    node: State!
+  }
+
+  type StateConnection {
+    totalCount: Int!
+    edges: [StateEdge!]!
+    pageInfo: PageInfo!
   }
 
   input StateCountryCodeInput {

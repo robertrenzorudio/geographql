@@ -3,10 +3,11 @@ import { gql } from 'graphql-tag';
 const typeDefs = gql`
   type Query {
     "Get a specific city by id."
-    city(id: Int!): City
+    city(id: Int!): City @complexity(value: 1)
 
     "Get a list of cities."
-    cities(filter: CityFilterInput, page: PaginationInput): [City!]!
+    cities(filter: CityFilterInput, page: PaginationInput): CityConnection!
+      @complexity(value: 1, multipliers: ["page.first", "page.last"])
   }
 
   type City {
@@ -39,6 +40,20 @@ const typeDefs = gql`
 
     "The longitude coordinate of the city."
     longitude: Float!
+  }
+
+  type CityEdge {
+    "A cursor for use in the pagination."
+    cursor: String!
+
+    "The item at the end of the edge."
+    node: City!
+  }
+
+  type CityConnection {
+    totalCount: Int!
+    edges: [CityEdge!]!
+    pageInfo: PageInfo!
   }
 
   input CityFilterInput {

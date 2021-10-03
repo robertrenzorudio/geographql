@@ -1,22 +1,29 @@
 import { Resolvers } from '../../types/graphql';
 import { UserInputError } from 'apollo-server-errors';
-import { prismaWhere, prismaPage } from '../../utils';
+import {
+  prismaWhere,
+  prismaPage,
+  createConnectionObject,
+  getCacheKeys,
+} from '../../utils';
 import { SubregionEnumToString } from './util';
 
 const resolvers: Resolvers = {
   Query: {
     country: async (_, args, ctx) => {
-      const where = prismaWhere.unique(args);
-      if (where) {
-        return ctx.db.country.findUnique({ where });
-      } else {
+      const where = await prismaWhere.unique(args);
+
+      if (!where) {
         throw new UserInputError(
           'You must provide id, iso2, iso3 or numeric_code'
         );
       }
+
+      ctx.req.queryCost = ctx.req.queryCost + 1 || 1;
+      return ctx.db.country.findUnique({ where });
     },
 
-    countries: async (_, { filter, page }, ctx) => {
+    countries: async (_, { filter, page }, ctx, info) => {
       const where = prismaWhere.many({
         subregion: filter?.subregion
           ? SubregionEnumToString[filter.subregion]
@@ -26,7 +33,36 @@ const resolvers: Resolvers = {
 
       const pagination = prismaPage(page);
 
-      return ctx.db.country.findMany({ where, ...pagination });
+      const countries = await ctx.db.country.findMany({
+        where,
+        ...pagination,
+        orderBy: { id: 'asc' },
+      });
+
+      ctx.req.queryCost =
+        ctx.req.queryCost + countries.length || countries.length;
+
+      if (where && countries.length !== 0) {
+        let cacheField: string;
+        let cacheKeys: { minKey: string; maxKey: string };
+        if (filter?.subregion) {
+          cacheKeys = getCacheKeys('Subregion', 'countries');
+          cacheField = countries[0].subregion;
+        } else {
+          cacheKeys = getCacheKeys('Region', 'countries');
+          cacheField = countries[0].region;
+        }
+        return createConnectionObject({
+          data: countries,
+          ctx,
+          info,
+          cacheKeys,
+          cacheField,
+        });
+      }
+
+      const cacheKeys = getCacheKeys('Country');
+      return createConnectionObject({ data: countries, ctx, info, cacheKeys });
     },
   },
 
@@ -37,14 +73,27 @@ const resolvers: Resolvers = {
         .timezones();
     },
 
-    states: async (parent, { page }, ctx) => {
+    states: async (parent, { page }, ctx, info) => {
       const pagination = prismaPage(page);
-      return await ctx.db.country
+
+      const states = await ctx.db.country
         .findUnique({ where: { id: parent.id } })
-        .states(pagination);
+        .states({ ...pagination, orderBy: { id: 'asc' } });
+
+      ctx.req.queryCost = ctx.req.queryCost + states.length || states.length;
+      const cacheKeys = getCacheKeys('Country', 'states');
+
+      return createConnectionObject({
+        data: states,
+        ctx,
+        info,
+        cacheKeys,
+
+        cacheField: parent.id,
+      });
     },
 
-    cities: async (parent, { filter, page }, ctx) => {
+    cities: async (parent, { filter, page }, ctx, info) => {
       const citiesWhere = prismaWhere.unique({
         state_id: filter?.sid,
         state_code: filter?.siso,
@@ -52,9 +101,32 @@ const resolvers: Resolvers = {
 
       const pagination = prismaPage(page);
 
-      return await ctx.db.country
+      const cities = await ctx.db.country
         .findUnique({ where: { id: parent.id } })
         .cities({ where: citiesWhere, ...pagination });
+
+      ctx.req.queryCost = ctx.req.queryCost + cities.length || cities.length;
+
+      if (citiesWhere && cities.length !== 0) {
+        const cacheKeys = getCacheKeys('State', 'cities');
+
+        return createConnectionObject({
+          data: cities,
+          ctx,
+          info,
+          cacheKeys,
+          cacheField: cities[0].state_id,
+        });
+      }
+      const cacheKeys = getCacheKeys('Country', 'cities');
+
+      return createConnectionObject({
+        data: cities,
+        ctx,
+        info,
+        cacheKeys,
+        cacheField: parent.id,
+      });
     },
   },
 };

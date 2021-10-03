@@ -4,9 +4,14 @@ const typeDefs = gql`
   type Query {
     "Get a specific country by id, iso2, iso3, or numeric_code."
     country(id: Int, iso2: ID, iso3: ID, numeric_code: ID): Country
+      @complexity(value: 1)
 
     "Get a list of countries."
-    countries(filter: CountryFilterInput, page: PaginationInput): [Country!]!
+    countries(
+      filter: CountryFilterInput
+      page: PaginationInput
+    ): CountryConnection!
+      @complexity(value: 1, multipliers: ["page.first", "page.last"])
   }
 
   type Country {
@@ -40,12 +45,17 @@ const typeDefs = gql`
     """
     Get a list of states/provinces/regions within the country.
     """
-    states(page: PaginationInput): [State!]!
+    states(page: PaginationInput): StateConnection!
+      @complexity(value: 1, multipliers: ["page.first", "page.last"])
 
     """
     Get a list of cities within the country.
     """
-    cities(filter: CountryCitiesFilterInput, page: PaginationInput): [City!]!
+    cities(
+      filter: CountryCitiesFilterInput
+      page: PaginationInput
+    ): CityConnection!
+      @complexity(value: 1, multipliers: ["page.first", "page.last"])
 
     "The capital city of the country."
     capital: String!
@@ -122,6 +132,20 @@ const typeDefs = gql`
     Western_Asia
     Western_Europe
     Southern_Asia
+  }
+
+  type CountryEdge {
+    "A cursor for use in the pagination."
+    cursor: String!
+
+    "The item at the end of the edge."
+    node: Country!
+  }
+
+  type CountryConnection {
+    totalCount: Int!
+    edges: [CountryEdge!]!
+    pageInfo: PageInfo!
   }
 
   input CountryFilterInput {
