@@ -111,8 +111,8 @@ const getCurrentTotalWithAPIKey = async (apiKey: string, ctx: MyContext) => {
     const user = await ctx.db.user.findUnique({ where: { api_key: apiKey } });
     if (user) {
       // Cache api key.
-      ctx.cache.setex(`RATELIMIT:${apiKey}`, rateLimitTTL, user.max_request);
-      return user.max_request;
+      ctx.cache.setex(`RATELIMIT:${apiKey}`, rateLimitTTL, user.max_points);
+      return user.max_points;
     } else {
       throw new AuthenticationError('Invalid API Key.');
     }
