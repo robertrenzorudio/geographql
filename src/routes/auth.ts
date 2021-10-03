@@ -6,6 +6,7 @@ import passportGoogle from 'passport-google-oauth20';
 import { User } from '@prisma/client';
 import prisma from '../prisma';
 import { v4 as uuidv4 } from 'uuid';
+import { Prisma } from '@prisma/client';
 
 const GitHubStrategy = passportGithub.Strategy;
 const GoogleStrategy = passportGoogle.Strategy;
@@ -58,6 +59,15 @@ passport.use(
         );
         return done(null, { user, accessToken, refreshToken });
       } catch (err) {
+        if (
+          err instanceof Prisma.PrismaClientKnownRequestError &&
+          err.code === 'P2002'
+        ) {
+          return done(null, {
+            error:
+              'An account already exists with the same email. Please continue with other authentication method.',
+          });
+        }
         return done(null, undefined);
       }
     }
@@ -80,6 +90,15 @@ passport.use(
         );
         return done(null, { user, accessToken, refreshToken });
       } catch (err) {
+        if (
+          err instanceof Prisma.PrismaClientKnownRequestError &&
+          err.code === 'P2002'
+        ) {
+          return done(null, {
+            error:
+              'An account already exists with the same email. Please continue with other authentication method.',
+          });
+        }
         return done(null, undefined);
       }
     }
@@ -98,6 +117,9 @@ authRouter.get(
     session: false,
   }),
   (req, res) => {
+    if ((req as any).user.error) {
+      return res.redirect(`/error?message=${(req as any).user.error}`);
+    }
     const {
       user: { id, api_key },
     } = req.user as { user: User };
@@ -114,10 +136,12 @@ authRouter.get(
 authRouter.get(
   '/google/callback',
   passport.authenticate('google', {
-    failureRedirect: '/error',
     session: false,
   }),
   (req, res) => {
+    if ((req as any).user.error) {
+      return res.redirect(`/error?message=${(req as any).user.error}`);
+    }
     const {
       user: { id, api_key },
     } = req.user as { user: User };

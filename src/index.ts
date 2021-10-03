@@ -49,6 +49,10 @@ const main = async () => {
 
   app.use('/auth', authRouter);
 
+  app.use('/error', (req, res) => {
+    res.status(403).json(req.query);
+  });
+
   const schema = await buildSchema();
 
   const apolloServer = new ApolloServer({
