@@ -9,7 +9,7 @@ import {
   getComplexity,
   simpleEstimator,
 } from 'graphql-query-complexity';
-import { apiKeyRateLimit, ipRateLimit, rateLimitTTL } from '../constants';
+import { rateLimitTTL, ipRateLimit } from '../constants';
 import { MyContext, MyRequest } from '../types/context';
 
 export const CalculateQueryComplexity = (
@@ -98,10 +98,9 @@ const checkRateLimit = async ({
     current = await getCurrentTotalWithIp(ip, ctx);
   }
 
-  const pointsLeft = apiKey ? apiKeyRateLimit - current : ipRateLimit - current;
-  const isOverLimit = current + cost > (apiKey ? apiKeyRateLimit : ipRateLimit);
+  const isOverLimit = current - cost < 0;
   return {
-    pointsLeft,
+    pointsLeft: current,
     isOverLimit,
   };
 };
@@ -112,13 +111,13 @@ const getCurrentTotalWithAPIKey = async (apiKey: string, ctx: MyContext) => {
     const user = await ctx.db.user.findUnique({ where: { api_key: apiKey } });
     if (user) {
       // Cache api key.
-      ctx.cache.setex(`RATELIMIT:${apiKey}`, rateLimitTTL, 0);
-      return 0;
+      ctx.cache.setex(`RATELIMIT:${apiKey}`, rateLimitTTL, user.max_request);
+      return user.max_request;
     } else {
       throw new AuthenticationError('Invalid API Key.');
     }
   }
-  return Math.abs(+currentTotal);
+  return +currentTotal;
 };
 
 const getCurrentTotalWithIp = async (
@@ -129,11 +128,11 @@ const getCurrentTotalWithIp = async (
 
   if (!currentTotal) {
     // Cache ip.
-    ctx.cache.setex(`RATELIMIT:${ip}`, rateLimitTTL, 0);
-    return 0;
+    ctx.cache.setex(`RATELIMIT:${ip}`, rateLimitTTL, ipRateLimit);
+    return ipRateLimit;
   }
 
-  return Math.abs(+currentTotal);
+  return +currentTotal;
 };
 
 class UserRequestError extends ApolloError {

@@ -30,7 +30,6 @@ const findOrCreateUser = async (
       strategy,
       profile_id,
       email,
-      request_left: 5000,
       api_key: uuidv4(),
     },
   });
