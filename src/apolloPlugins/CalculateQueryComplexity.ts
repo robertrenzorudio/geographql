@@ -52,6 +52,7 @@ export const CalculateQueryComplexity = (
           cost: complexity,
         });
 
+        console.log({ complexity, pointsLeft });
         if (isOverLimit) {
           throw new UserRequestError(
             `Not enough points: estimated query cost: ${complexity}, points left: ${pointsLeft}`

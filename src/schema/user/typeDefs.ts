@@ -3,7 +3,7 @@ import { gql } from 'graphql-tag';
 const typeDefs = gql`
   type Query {
     "Get your profile."
-    me: User
+    me: User @complexity(value: 1)
   }
 
   type Mutation {
@@ -11,7 +11,7 @@ const typeDefs = gql`
     logout: Boolean!
 
     "Refresh your api key."
-    refreshAPIKey: String
+    refreshAPIKey: String @complexity(value: 10)
   }
 
   type User {

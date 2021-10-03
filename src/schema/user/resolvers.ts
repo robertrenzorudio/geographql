@@ -13,6 +13,8 @@ const resolvers: Resolvers = {
       const me = await db.user.findUnique({
         where: { id: req.session.userId },
       });
+
+      req.queryCost = req.queryCost + 1 || 1;
       return me;
     },
   },
@@ -47,6 +49,8 @@ const resolvers: Resolvers = {
           api_key: uuidv4(),
         },
       });
+
+      req.queryCost = req.queryCost + 10 || 10;
       return api_key;
     },
   },
