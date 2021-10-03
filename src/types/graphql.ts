@@ -379,8 +379,8 @@ export type User = {
   profile_id: Scalars['String'];
   /** User email address. */
   email: Scalars['String'];
-  /** Number of request left. */
-  request_left: Scalars['Int'];
+  /** Max GraphQL query points */
+  max_request: Scalars['Int'];
   /** User api key. */
   api_key: Scalars['String'];
 };
@@ -655,7 +655,7 @@ export type UserResolvers<ContextType = MyContext, ParentType extends ResolversP
   strategy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   profile_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  request_left?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  max_request?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   api_key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
