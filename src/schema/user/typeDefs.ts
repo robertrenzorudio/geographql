@@ -27,7 +27,7 @@ const typeDefs = gql`
     "User email address."
     email: String!
 
-    "Max GraphQL query points."
+    "Max GraphQL query/mutation points."
     max_points: Int!
 
     "User api key."
