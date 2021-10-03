@@ -83,14 +83,13 @@ model City {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  strategy     Strategy
-  profile_id   String   @db.VarChar(255)
-  email        String   @db.VarChar(255)
-  request_left Int
-  api_key      String   @unique @db.VarChar(255)
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  id         String   @id @default(uuid())
+  strategy   Strategy
+  profile_id String   @db.VarChar(255)
+  email      String   @unique @db.VarChar(255)
+  api_key    String   @unique @db.VarChar(255)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@unique([strategy, profile_id])
 }
