@@ -379,7 +379,7 @@ export type User = {
   profile_id: Scalars['String'];
   /** User email address. */
   email: Scalars['String'];
-  /** Max GraphQL query points. */
+  /** Max GraphQL query/mutation points. */
   max_points: Scalars['Int'];
   /** User api key. */
   api_key: Scalars['String'];
