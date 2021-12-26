@@ -1,0 +1,20 @@
+version: "3.9"
+services: 
+    api:
+        build: .
+        environment:
+            - REDIS_URL=redis://redis
+            - DATABASE_URL=postgres://user:pass@postgres:5432/db
+        ports: 
+            - 8080:4000
+    redis:
+        image: "redis"
+    
+    postgres:
+        image: "postgres"
+        ports:
+            - "35432:5432"
+        environment:
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: pass
+            POSTGRES_DB: db
