@@ -357,7 +357,7 @@ export type Timezone = {
   __typename?: 'Timezone';
   /** The zone name. */
   zone_name: Scalars['String'];
-  /** The Greenwich Mean Time offset in seconds */
+  /** The Greenwich Mean Time offset in seconds. */
   gmt_offset: Scalars['Int'];
   /** Greenwich Mean Time offset name. */
   gmt_offset_name: Scalars['String'];
