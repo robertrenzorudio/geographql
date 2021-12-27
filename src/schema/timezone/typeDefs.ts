@@ -5,7 +5,7 @@ const typeDefs = gql`
     "The zone name."
     zone_name: String!
 
-    "The Greenwich Mean Time offset in seconds"
+    "The Greenwich Mean Time offset in seconds."
     gmt_offset: Int!
 
     "Greenwich Mean Time offset name."
