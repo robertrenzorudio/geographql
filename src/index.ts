@@ -53,6 +53,10 @@ const main = async () => {
     res.status(403).json(req.query);
   });
 
+  app.get('/', (_, res) => {
+    res.redirect('graphql');
+  });
+
   const schema = await buildSchema();
 
   const apolloServer = new ApolloServer({
