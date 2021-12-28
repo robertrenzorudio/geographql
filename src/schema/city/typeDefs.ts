@@ -60,10 +60,10 @@ const typeDefs = gql`
     "Filter by country ISO Alpha-2 code."
     ciso2: ID!
 
-    "Filter by state id withrin supplied csio2."
+    "Filter by state id within the supplied csio2."
     sid: Int
 
-    "Filter by state code within supplied csio2."
+    "Filter by state code within the supplied csio2."
     siso: String
   }
 `;
