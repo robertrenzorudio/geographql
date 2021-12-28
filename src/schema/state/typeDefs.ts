@@ -26,7 +26,7 @@ const typeDefs = gql`
 
     """
     The id of the country where the
-    the state is located.
+    state is located.
     """
     country_id: Int!
 
@@ -40,10 +40,10 @@ const typeDefs = gql`
     cities(page: PaginationInput): CityConnection!
       @complexity(value: 1, multipliers: ["page.first", "page.last"])
 
-    "The latitude of the state."
+    "The latitude coordinate of the state."
     latitude: Float
 
-    "The longitude of the state."
+    "The longitude coordinate of the state."
     longitude: Float
   }
 
