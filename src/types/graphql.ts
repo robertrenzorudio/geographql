@@ -62,9 +62,9 @@ export type CityEdge = {
 export type CityFilterInput = {
   /** Filter by country ISO Alpha-2 code. */
   ciso2: Scalars['ID'];
-  /** Filter by state id withrin supplied csio2. */
+  /** Filter by state id within the supplied csio2. */
   sid?: Maybe<Scalars['Int']>;
-  /** Filter by state code within supplied csio2. */
+  /** Filter by state code within the supplied csio2. */
   siso?: Maybe<Scalars['String']>;
 };
 
@@ -113,9 +113,9 @@ export type Country = {
   timezones: Array<Timezone>;
   /** The translation of the country's name in several languages. */
   translations: Scalars['JSONObject'];
-  /** The latitude of the country. */
+  /** The latitude coordinate of the country. */
   latitude: Scalars['Float'];
-  /** The longitude of the country. */
+  /** The longitude coordinate of the country. */
   longitude: Scalars['Float'];
   /** The emoji flag of the country. */
   emoji: Scalars['String'];
@@ -277,7 +277,7 @@ export type State = {
   state_code: Scalars['String'];
   /**
    * The id of the country where the
-   * the state is located.
+   * state is located.
    */
   country_id: Scalars['Int'];
   /**
@@ -287,9 +287,9 @@ export type State = {
   country_code: Scalars['String'];
   /** Get a list of cities within the state. */
   cities: CityConnection;
-  /** The latitude of the state. */
+  /** The latitude coordinate of the state. */
   latitude?: Maybe<Scalars['Float']>;
-  /** The longitude of the state. */
+  /** The longitude coordinate of the state. */
   longitude?: Maybe<Scalars['Float']>;
 };
 
