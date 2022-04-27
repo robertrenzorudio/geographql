@@ -6,7 +6,10 @@
 
 # env
 .env
-.env.production
+.env.*
+
+# data
+*.sql
 
 # misc
 .DS_STORE

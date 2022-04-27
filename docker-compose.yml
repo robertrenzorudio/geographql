@@ -1,0 +1,38 @@
+version: '3.8'
+
+services: 
+  api: 
+    container_name: api 
+    image: api:1.0.0
+    build:
+      context: .
+    ports:
+      - '8080:8080'
+    env_file:
+      - .env
+    depends_on: 
+      - db
+      - cache
+  db:
+    container_name: db
+    image: 'postgres:alpine'
+    restart: always
+    ports:
+      - '5432:5432'
+    env_file:
+      - .env.db
+    volumes:
+      - pg_geographql:/var/lib/postgresql/data
+  cache:
+    container_name: cache
+    image: 'redis:alpine'
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_geographql:/data
+volumes:
+  pg_geographql:
+    external: true
+  redis_geographql:
+    external: true

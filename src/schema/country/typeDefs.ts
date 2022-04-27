@@ -84,10 +84,10 @@ const typeDefs = gql`
     "The translation of the country's name in several languages."
     translations: JSONObject!
 
-    "The latitude of the country."
+    "The latitude coordinate of the country."
     latitude: Float!
 
-    "The longitude of the country."
+    "The longitude coordinate of the country."
     longitude: Float!
 
     "The emoji flag of the country."
