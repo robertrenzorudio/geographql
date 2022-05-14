@@ -7,7 +7,7 @@
 
 <p align="center" ><a href="https://geographql.netlify.app">Read the docs</a></p>
 
-<p align="center" ><a href="https://api.geographql.renzooo.com/graphql">Playground</a></p>
+<p align="center" ><a href="https://api.geographql.rudio.dev/graphql">Playground</a></p>
 
 <h1 style="margin-top: 0px;">Run Locally</h1>
 
@@ -19,13 +19,20 @@ $ git clone https://github.com/robertrenzorudio/geographql/
 
 ### Setup environment variables
 
+## .env
 ```
 # Dababase
 DB_USERNAME=
 DB_PASSWORD=
 DB_HOST=
 DB_NAME=
-DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:5432/${DB_NAME}?schema=public
+DATABASE_URL=
+
+# Redis 
+CACHE_HOST=
+CACHE_PORT=
+CACHE_PASSWORD=
+CACHE_URL=
 
 # Oauth
 # Github
@@ -36,16 +43,21 @@ GITHUB_CLIENT_SECRET=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
-# Redis
-REDIS_URL=
-
 # Session
 SESSION_NAME=
 SESSION_SECRET=
 SESSION_DOMAIN=
 
 # Express
-PORT=
+PORT=8080
+```
+
+## .env.db
+```
+# Dababase
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_DB=
 ```
 
 ### With yarn
